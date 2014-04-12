@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include "display.h"
 
 //#define a 2;
 //#define N_SPECTATORS 2;
@@ -22,16 +23,13 @@ void* spectator (void *v) {
   while (1) {
     sleep(2);
     sem_wait(&noJudge);
-    printf ("Spectator entrando\n");
 
+    spec_enter();
     sem_post(&noJudge);
 
-    // spectate();
-    printf("Spectator spectando.\n");
+    spec_spec();
     
-
-    /* spec_leave(); */
-    printf ("Spectator saindo\n");
+    spec_leave();
   }
 }
 
@@ -39,16 +37,15 @@ void* immigrant (void *v) {
   int r;
   while (1) {
     sem_wait(&noJudge);
-    // immi_enter();
+    immi_enter();
     sleep(1);
-    printf("Immigrant entrando.\n");
+    
     //    entered++;
     __sync_fetch_and_add(&entered, 1);
     sem_post(&noJudge);
   
     sem_wait(&mutex);
-    //checkIn();
-    printf("Immigrant checking in.\n");
+    immi_checkin();
     checked++;
    
     if (judgeInside == 1 && entered == checked) {
@@ -57,18 +54,15 @@ void* immigrant (void *v) {
       sem_post(&mutex);
     }
 
-    //    sitDown();
-    printf("Immigrant sentando.\n");
+    immi_sit();
     sem_wait(&confirmed);
 
-    //    swear();
-    printf("Immigrant jurando.\n");
-    //getCertificate();
-    printf("Immigrant pegando certificado.\n");
-
+    immi_swear();
+    immi_getcert();
+    
     sem_wait(&saida);
-    //    immi_leave();
-    printf("Immigrant saindo.\n");
+    immi_leave();
+    
     //    checked--;
     r = __sync_sub_and_fetch(&checked, 1);
     if (r == 0) 
@@ -86,8 +80,8 @@ void *judge (void *v) {
     sem_wait(&noJudge);
     sem_wait(&mutex);
 
-    //enter();
-    printf("Juiz entrando.\n");
+    judge_enter();
+    
     judgeInside = 1;
 
     if (entered > checked) {
@@ -95,16 +89,15 @@ void *judge (void *v) {
       sem_wait(&allSignedIn);
     }
 
-    //confirm();
-    printf("Juiz confirmando.\n");
-
+    judge_confirm();
+    
     //teste
     for (temp = checked; temp > 0; temp--)
       sem_post(&confirmed);
     entered = 0;
     sleep(3);
-    // leave(); 
-    printf("Juiz saindo.\n");
+    judge_leave();
+    
     judgeInside = 0;
   
     sem_post(&saida);
