@@ -109,8 +109,8 @@ void *judge (void *v) {
 
 int main() {
   pthread_t thr_judge;
-  pthread_t thr_immig[2];
-  pthread_t thr_specs[2];
+  pthread_t thr_immig[6];
+  pthread_t thr_specs[6];
   int i=0;
   sem_init(&noJudge, 0, 1);
   sem_init(&mutex, 0, 1);
@@ -121,18 +121,18 @@ int main() {
 
   pthread_create(&thr_judge, NULL, judge, NULL);
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 6; i++)
     pthread_create(thr_immig+i, NULL, immigrant, (void*) &i);
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 6; i++)
     pthread_create(thr_specs+i, NULL, spectator, (void*) &i);
   
   pthread_join(thr_judge, NULL);
   
-  for (i = 0; i <  2; i++)
+  for (i = 0; i < 6; i++)
     pthread_join(thr_immig[i], NULL);
 
-  for (i=0; i < 2; i++)
+  for (i=0; i < 6; i++)
     pthread_join(thr_specs[i], NULL);
 
   return 0;
