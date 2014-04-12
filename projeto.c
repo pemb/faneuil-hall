@@ -18,7 +18,9 @@ volatile int checked = 0;
 volatile int judgeInside = 0;
 
 void* spectator (void *v) {
+  int r;
   while (1) {
+    sleep(2);
     sem_wait(&noJudge);
     printf ("Spectator entrando\n");
 
@@ -34,11 +36,14 @@ void* spectator (void *v) {
 }
 
 void* immigrant (void *v) {
+  int r;
   while (1) {
     sem_wait(&noJudge);
     // immi_enter();
+    sleep(1);
     printf("Immigrant entrando.\n");
-    entered++;
+    //    entered++;
+    __sync_fetch_and_add(&entered, 1);
     sem_post(&noJudge);
   
     sem_wait(&mutex);
@@ -64,8 +69,9 @@ void* immigrant (void *v) {
     sem_wait(&saida);
     //    immi_leave();
     printf("Immigrant saindo.\n");
-    checked--;
-    if (checked == 0)
+    //    checked--;
+    r = __sync_sub_and_fetch(&checked, 1);
+    if (r == 0)
       sem_post(&allGone);
     else
       sem_post(&saida);
@@ -74,6 +80,7 @@ void* immigrant (void *v) {
 
 void *judge (void *v) {
   while (1) {
+    sleep(5);
     sem_wait(&noJudge);
     sem_wait(&mutex);
 
@@ -93,13 +100,14 @@ void *judge (void *v) {
     for (; checked > 0; checked--)
       sem_post(&confirmed);
     entered = 0;
-  
+    sleep(3);
     // leave(); 
     printf("Juiz saindo.\n");
     judgeInside = 0;
   
     sem_post(&saida);
     sem_wait(&allGone);
+    printf("PASSOU PELO ALLGONE\n");
     sem_post(&mutex);
     sem_post(&noJudge);
   }
