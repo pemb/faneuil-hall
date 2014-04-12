@@ -3,7 +3,9 @@ BINS= projeto
 
 all: $(BINS)
 
-.PHONY = clean
+projeto: display.o
+
+.PHONY: clean
 
 clean:
 	rm -f *.o $(BINS)
