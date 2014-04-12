@@ -1,4 +1,4 @@
-CFLAGS= -lncurses -lpthread
+CFLAGS= -lncurses -lpthread -Wall -Werror --pedantic
 BINS= projeto
 
 all: $(BINS)

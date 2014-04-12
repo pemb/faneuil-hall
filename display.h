@@ -11,7 +11,7 @@ void immi_getcert(void);
 
 void immi_leave(void);
 
-void immi_enter(void);;
+void immi_enter(void);
 
 void immi_checkin(void);
 
