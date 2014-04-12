@@ -50,7 +50,7 @@ void* immigrant (void *v) {
     //checkIn();
     printf("Immigrant checking in.\n");
     checked++;
-  
+   
     if (judgeInside == 1 && entered == checked) {
       sem_post(&allSignedIn);
     } else {
@@ -71,14 +71,16 @@ void* immigrant (void *v) {
     printf("Immigrant saindo.\n");
     //    checked--;
     r = __sync_sub_and_fetch(&checked, 1);
-    if (r == 0)
+    if (r == 0) 
       sem_post(&allGone);
-    else
+    
+    else 
       sem_post(&saida);
   }
 }
 
 void *judge (void *v) {
+  int temp;
   while (1) {
     sleep(5);
     sem_wait(&noJudge);
@@ -97,7 +99,7 @@ void *judge (void *v) {
     printf("Juiz confirmando.\n");
 
     //teste
-    for (; checked > 0; checked--)
+    for (temp = checked; temp > 0; temp--)
       sem_post(&confirmed);
     entered = 0;
     sleep(3);
@@ -107,7 +109,6 @@ void *judge (void *v) {
   
     sem_post(&saida);
     sem_wait(&allGone);
-    printf("PASSOU PELO ALLGONE\n");
     sem_post(&mutex);
     sem_post(&noJudge);
   }
