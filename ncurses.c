@@ -95,7 +95,7 @@ void create_box(WIN *p_win, bool flag)
 		mvvline(y + 1, x, p_win->border.ls, h - 1);
 		mvvline(y + 1, x + w, p_win->border.rs, h - 1);
 
-		mvvline(y + 1, x + 40, 'X', h - 1); // barra vertical
+		mvvline(y + 1, x + 40, 'X', h - 1); /* barra vertical */
                    
 		desk_judge(p_win, true);
                 

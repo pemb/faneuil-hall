@@ -1,5 +1,5 @@
-CFLAGS= -lncurses -lpthread -Wall -Werror --pedantic
-BINS= projeto
+CFLAGS= -lncurses -pthread -Wall -Werror --pedantic
+BINS= projeto ncurses
 
 all: $(BINS)
 
