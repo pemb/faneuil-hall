@@ -6,35 +6,44 @@
 #include "display.h"
 
 #define SPECTATORS 10
-#define IMMIGRANTS 10
+#define SPECTATOR_MAX_WAIT 2*(SPECTATORS+IMMIGRANTS)
+#define IMMIGRANTS 4
+#define JUDGE_SLEEP 1
 
 sem_t no_judge;			/* 1 */
-sem_t saida;			/* 0 */
+sem_t exit_sem;			/* 0 */
 sem_t all_gone;			/* 1 */
 
 pthread_mutex_t mutex;
+pthread_mutex_t rand_lock;
 pthread_cond_t confirmed;
 pthread_cond_t all_signed_in;
 
 volatile int entered = 0;
+volatile int spectators = 0;
 volatile int checked = 0;
-volatile int judgeInside = 0;
+volatile int judge_inside = 0;
 
 
 void *spectator(void *v)
 {
   while (1)
     {
+      int i;
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
+      spec_enter();
       sem_post(&no_judge);
 
-      spec_enter();
       spec_spec();
 
-      /* TODO: espera aleatória */
+/* dorme um tempo aleatório */
 
-      sleep(10);
+      pthread_mutex_lock(&rand_lock);
+      i = (rand() % SPECTATOR_MAX_WAIT) + 1;
+      pthread_mutex_unlock(&rand_lock);
+
+      sleep(i);
 
       spec_leave();
     }
@@ -53,35 +62,32 @@ void *immigrant(void *v)
       sem_post(&no_judge);
 
 
-      /* faz checkin */
       pthread_mutex_lock(&mutex);
-      checked++;
-      immi_checkin();
-
 
       /* o último a fazer checkin avisa o judge */
-      if (judgeInside && entered == checked)
+      if (entered == ++checked && judge_inside)
 	pthread_cond_signal(&all_signed_in);
 
+      immi_checkin();
       immi_sit();
 
       /* esperam a confirmação e soltam o mutex */
       pthread_cond_wait(&confirmed, &mutex);
       pthread_mutex_unlock(&mutex);
 
-      /* juram e pegam certificado paralelamente */
+      /* juram e pegam certificado concorrentemente */
       immi_swear();
       immi_getcert();
 
       /* turnstile da saída */
-      sem_wait(&saida);
+      sem_wait(&exit_sem);
       immi_leave();
 
       /* último a sair */
       if (!--checked)
 	sem_post(&all_gone);
       else
-	sem_post(&saida);
+	sem_post(&exit_sem);
 
     }
   return NULL;
@@ -91,34 +97,37 @@ void *judge(void *v)
 {
   while (1)
     {
-
       /* dá tempo de immigrants entrarem */
-      sleep(5);
-
+#ifdef JUDGE_SLEEP
+      sleep(JUDGE_SLEEP);
+#endif
       /* trava a turnstile de entrada */
       sem_wait(&no_judge);
 
       /* pega o mutex */
       pthread_mutex_lock(&mutex);
 
-      judgeInside = 1;
+      judge_inside = 1;
       judge_enter();
 
       /* só espera se ainda tem immigrants sem checkin */
-      if (entered > checked)
+      while (entered > checked)
 	pthread_cond_wait(&all_signed_in, &mutex);
-      pthread_mutex_unlock(&mutex);
+
+      judge_confirm();
 
       /* confirma */
-      judge_confirm();
       pthread_cond_broadcast(&confirmed);
+      pthread_mutex_unlock(&mutex);
 
-      entered = 0;
-      judgeInside = 0;
+      entered = judge_inside = 0;
+
       judge_leave();
-
-      sem_post(&saida);
-      sem_wait(&all_gone);
+      if (checked)
+	{
+	  sem_post(&exit_sem);
+	  sem_wait(&all_gone);
+	}
       sem_post(&no_judge);
     }
   return NULL;
@@ -131,17 +140,21 @@ int main()
   pthread_t thr_immig[IMMIGRANTS];
   pthread_t thr_specs[SPECTATORS];
   int i;
+
+  srand(time(0));
+
   sem_init(&no_judge, 0, 1);
-  sem_init(&saida, 0, 0);
+  sem_init(&exit_sem, 0, 0);
   sem_init(&all_gone, 0, 0);
-  /* sem_init(&all_signed_in, 0, 0); //confirmar */
 
   pthread_mutex_init(&mutex, NULL);
+  pthread_mutex_init(&rand_lock, NULL);
+
   pthread_cond_init(&confirmed, NULL);
   pthread_cond_init(&all_signed_in, NULL);
 
 
-  pthread_create(&thr_judge, NULL, judge, NULL);
+
 
   for (i = 0; i < IMMIGRANTS; i++)
     pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
@@ -149,19 +162,23 @@ int main()
   for (i = 0; i < SPECTATORS; i++)
     pthread_create(thr_specs + i, NULL, spectator, (void *) &i);
 
-  pthread_join(thr_judge, NULL);
+  pthread_create(&thr_judge, NULL, judge, NULL);
 
-  for (i = 0; i < IMMIGRANTS; i++)
-    pthread_join(thr_immig[i], NULL);
+  pthread_join(thr_judge, NULL);
 
   for (i = 0; i < SPECTATORS; i++)
     pthread_join(thr_specs[i], NULL);
 
+  for (i = 0; i < IMMIGRANTS; i++)
+    pthread_join(thr_immig[i], NULL);
+
+
   sem_destroy(&no_judge);
-  sem_destroy(&saida);
+  sem_destroy(&exit_sem);
   sem_destroy(&all_gone);
 
   pthread_mutex_destroy(&mutex);
+  pthread_mutex_destroy(&rand_lock);
   pthread_cond_destroy(&confirmed);
   pthread_cond_destroy(&all_signed_in);
 
