@@ -155,6 +155,8 @@ int main()
 
 
 
+  init();
+  
 
   for (i = 0; i < IMMIGRANTS; i++)
     pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
@@ -171,6 +173,8 @@ int main()
 
   for (i = 0; i < IMMIGRANTS; i++)
     pthread_join(thr_immig[i], NULL);
+
+  finish();
 
 
   sem_destroy(&no_judge);

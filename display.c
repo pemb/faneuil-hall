@@ -1,75 +1,133 @@
 #include "display.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <curses.h>
+#include <pthread.h>
+
+pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void init(void)
+{
+  initscr();
+  /* start_color(); */
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+  /* init_pair(1, COLOR_CYAN, COLOR_BLACK); */
+
+}
+
+void finish(void)
+{
+  endwin();
+}
 
 void spec_enter(void)
 {
-  puts("Spectator enters.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Spectator enters.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void spec_spec(void)
 {
-  puts("Spectator spectates.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Spectator spectates.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
+  
 }
 
 void spec_leave(void)
 {
-  puts("Spectator leaves.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Spectator leaves.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void immi_getcert(void)
 {
-  puts("Immigrant gets certificate.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant gets certificate.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void immi_leave(void)
 {
-  puts("Immigrant leaves.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant leaves.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void immi_enter(void)
 {
-  puts("Immigrant enters.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant enters.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void immi_checkin(void)
 {
-  puts("Immigrant checks in.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant checks in.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void immi_sit(void)
 {
-  puts("Immigrant sits down.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant sits down.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
+
 }
 
 void immi_swear(void)
 {
-  puts("Immigrant swears.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Immigrant swears.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void judge_enter(void)
 {
-  puts("Judge enters.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Judge enters.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void judge_confirm(void)
 {
-  puts("Judge confirms.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Judge confirms.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void judge_leave(void)
 {
-  puts("Judge leaves.");
+  pthread_mutex_lock(&ncurses_lock);
+  printw("Judge leaves.");
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }

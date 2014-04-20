@@ -1,6 +1,10 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+void init(void);
+
+void finish(void);
+
 void spec_enter(void);
 
 void spec_spec(void);
