@@ -146,9 +146,19 @@ void desk_judge(WIN * p_win, bool flag)
     }
 }
 
+char cadeira[][10] =
+  {
+    " .-===-. ",
+    " | . . | ",
+    " | .'. | ",
+    "()_____()",
+    "||_____||",
+    " W     W ",
+  };
+
 void chair_spec(WIN * p_win, bool flag, int i)
 {
-  int x, y, w, h, x1, y1;
+  int x, y, w, h, x1, y1, j;
 
   x1 = p_win->startx;
   y1 = p_win->starty;
@@ -159,45 +169,9 @@ void chair_spec(WIN * p_win, bool flag, int i)
   x = (x1 + w) * 0.3 + i * 10;
 
   if (flag == FALSE)
-    {
-      mvvline(y, x, ' ', 3);
-      mvaddch(y, x + 1, '.');
-      mvaddch(y, x + 2, '-');
-      mvhline(y, x + 3, '=', 3);
-      mvaddch(y, x + 6, '-');
-      mvaddch(y, x + 7, '.');
-
-      mvvline(y + 1, x + 1, '|', 2);
-      mvaddch(y + 1, x + 2, ' ');
-      mvaddch(y + 1, x + 3, '.');
-      mvaddch(y + 1, x + 4, ' ');
-      mvaddch(y + 1, x + 5, '.');
-      mvaddch(y + 1, x + 6, ' ');
-      mvvline(y + 1, x + 7, '|', 2);
-
-      mvaddch(y + 2, x + 2, ' ');
-      mvaddch(y + 2, x + 3, '.');
-      mvaddch(y + 2, x + 4, '\'');
-      mvaddch(y + 2, x + 5, '.');
-      mvaddch(y + 2, x + 6, ' ');
-
-      mvaddch(y + 3, x, '(');
-      mvaddch(y + 3, x + 1, ')');
-      mvhline(y + 3, x + 2, '_', 5);
-      mvaddch(y + 3, x + 7, '(');
-      mvaddch(y + 3, x + 8, ')');
-
-      mvhline(y + 4, x, '|', 2);
-      mvhline(y + 4, x + 2, '_', 5);
-      mvhline(y + 4, x + 7, '|', 2);
-
-      mvaddch(y + 5, x, ' ');
-      mvaddch(y + 5, x + 1, 'W');
-      mvhline(y + 5, x + 2, ' ', 5);
-      mvaddch(y + 5, x + 7, 'W');
-      mvaddch(y + 5, x + 8, ' ');
-
-  } else
+      for (j = 0; j < 6; j++)
+	mvprintw(y + j, x, cadeira[j]);
+  else
     {
 
 
