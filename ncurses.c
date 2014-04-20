@@ -1,5 +1,5 @@
 #include <ncurses.h>
-
+#include <string.h>
 typedef struct _win_border_struct {
   chtype ls, rs, ts, bs, tl, tr, bl, br;
 } WIN_BORDER;
@@ -18,8 +18,10 @@ void init_win_params(WIN * p_win);
 void print_win_params(WIN * p_win);
 void create_box(WIN * win, bool flag);
 
-#define qtd_cadeiras 15
-#define spectadores  13
+#define qtd_cadeiras 8
+#define spectadores  8
+
+char juiz_entrou[] = {"O Juiz esta na sala."};
 
 int main(int argc, char *argv[])
 {
@@ -100,7 +102,7 @@ void create_box(WIN * p_win, bool flag)
       mvvline(y + 1, x, p_win->border.ls, h - 1);
       mvvline(y + 1, x + w, p_win->border.rs, h - 1);
 
-      mvvline(y + 1, x + 40, 'X', h - 1);	/* barra vertical */
+      mvvline(y + 1, x + 42, 'X', h - 1);	/* barra vertical */
 
       desk_judge(p_win, true);
 
@@ -108,7 +110,9 @@ void create_box(WIN * p_win, bool flag)
 	chair_spec(p_win, false, i);
       for (; i < qtd_cadeiras; i++)
 	chair_spec(p_win, true, i);
-
+      drawEveryOne(p_win, y+1, x+1); 
+      apagar_immi(p_win, 2);
+      hammer(p_win);
 
   } else
     for (j = y; j <= y + h; ++j)
@@ -140,11 +144,44 @@ void desk_judge(WIN * p_win, bool flag)
       mvvline(0.8 * (y + h), 0.6 * (x + w), '|', 10);
       mvhline(0.8 * (y + h), 0.6 * (x + w), '-',
 	      0.8 * (x + w) - 0.6 * (x + w));
-      mvhline(0.9 * (y + h), 0.6 * (x + w), '-',
-	      0.8 * (x + w) - 0.6 * (x + w));
+      /*  mvhline(0.9 * (y + h), 0.6 * (x + w), '-',
+	  0.8 * (x + w) - 0.6 * (x + w));*/
 
     }
 }
+
+char bigMan [][11] = 
+  {
+    "  _    ",
+    " (_)   ",
+    " _;_   ",
+    "/ | \\  ",
+    "\\ |  \\ ",
+    " `|\\  `",
+    "  | \\  ",
+    " /  /_ ",
+    " `     ",
+  };
+
+char smallMan [][8] = 
+  {
+    " (}  ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+  };
+
+char martelo [][17] = 
+  {
+    " __             ",
+    "|  | ___________",
+    "|  >:===========",
+    "|__|            ",
+     
+  };
+
 
 char cadeira[][10] =
   {
@@ -154,6 +191,18 @@ char cadeira[][10] =
     "()_____()",
     "||_____||",
     " W     W ",
+  };
+        
+char immi[][8] = //ou 10
+  {
+    "  /-\\  ",
+    "  \\_/  ",
+    " /\\Y/\\ ",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
   };
 
 void chair_spec(WIN * p_win, bool flag, int i)
@@ -166,7 +215,7 @@ void chair_spec(WIN * p_win, bool flag, int i)
   h = p_win->height;
 
   y = (y1 + h) * 0.2;
-  x = (x1 + w) * 0.3 + i * 10;
+  x = (x1 + w) * 0.35 + i * 10;
 
   if (flag == FALSE)
       for (j = 0; j < 6; j++)
@@ -176,4 +225,74 @@ void chair_spec(WIN * p_win, bool flag, int i)
 
 
     }
+}
+
+void hammer(WIN * p_win) {
+
+ int x, y, w, h, x1, y1, j;
+
+  x1 = p_win->startx;
+  y1 = p_win->starty;
+  w = p_win->width;
+  h = p_win->height;
+  y = 0.8 * (y1 + h) + 2;
+  x = 0.6 * (x1 + w) + 2;
+
+  mvaddstr(y - 1, x -1, "Juiz esta na sala");
+
+  for (j = 0; j < 6; j++)
+    mvaddstr(y + j, x, martelo[j]);
+  int size = strlen(juiz_entrou);
+  for (j =0; j < size; j++)
+    mvaddch(y-1, x-1+j, ' ');
+  erasePart(p_win, 18, 4, x, y);
+
+}
+/** Funcao que apaga x unidades para a direita ou y unidades para a esquerda, desde x_comeco e y_comeco */
+void erasePart(WIN * p_win, int x, int y, int x_comeco, int y_comeco) {
+  int i, j;
+
+  for (i = 0; i < y; i++) {
+    for (j = 0; j < x; j++) {
+      mvaddch(y_comeco + i, x_comeco + j, ' ');
+    }
+
+  }
+
+
+}
+
+void drawSmallMan(WIN * p_win, int y_comeco, int x_comeco) {
+
+  int i, j, p;
+  for (i = 0; i < 4; i++) 
+    for (j=0; j < 5; j++) 
+      for(p=0; p<6; p++)
+	mvaddstr(y_comeco + p + i*7, x_comeco + j*8, smallMan[p]);
+}
+
+void drawEveryOne(WIN * p_win, int y_comeco, int x_comeco) {
+
+  int i, j, p;
+  for (i = 0; i < 4; i++) 
+    for (j=0; j < 3; j++) 
+      for(p=0; p<6; p++)
+	mvaddstr(y_comeco + p + i*7, x_comeco + j*8, smallMan[p]);
+
+  for (i = 0; i < 3; i++)
+    for (j=3; j < 5; j++)
+      for (p=0; p < 8; p++)
+	mvaddstr(y_comeco + p + i*9, x_comeco + 24 + (j-3)*8, immi[p]);
+}
+
+/* apagar um imigrante com id i
+y_comeco = p_win->starty +1 + i/2*9;
+x_comeco = p_win->startx +1 + 24 + (i+1)/2*8;
+*/
+void apagar_immi(WIN * p_win, int id) {
+  int x, y;
+  y = p_win->starty +1 + id/2*9;
+  x = p_win->startx +1 + 24 + (id%2)*8;
+  
+  erasePart(p_win, 8, 8, x, y);
 }
