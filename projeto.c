@@ -37,7 +37,7 @@ void *spectator(void *v)
 
       spec_spec();
 
-/* dorme um tempo aleatório */
+      /* dorme um tempo aleatório */
 
       pthread_mutex_lock(&rand_lock);
       i = (rand() % SPECTATOR_MAX_WAIT) + 1;
@@ -153,29 +153,29 @@ int main()
   pthread_cond_init(&confirmed, NULL);
   pthread_cond_init(&all_signed_in, NULL);
 
+  if (!(i = init()))
+    {
 
+      for (i = 0; i < IMMIGRANTS; i++)
+	pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
 
-  init();
-  
+      for (i = 0; i < SPECTATORS; i++)
+	pthread_create(thr_specs + i, NULL, spectator, (void *) &i);
 
-  for (i = 0; i < IMMIGRANTS; i++)
-    pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
+      pthread_create(&thr_judge, NULL, judge, NULL);
 
-  for (i = 0; i < SPECTATORS; i++)
-    pthread_create(thr_specs + i, NULL, spectator, (void *) &i);
+      pthread_join(thr_judge, NULL);
 
-  pthread_create(&thr_judge, NULL, judge, NULL);
+      for (i = 0; i < SPECTATORS; i++)
+	pthread_join(thr_specs[i], NULL);
 
-  pthread_join(thr_judge, NULL);
+      for (i = 0; i < IMMIGRANTS; i++)
+	pthread_join(thr_immig[i], NULL);
 
-  for (i = 0; i < SPECTATORS; i++)
-    pthread_join(thr_specs[i], NULL);
-
-  for (i = 0; i < IMMIGRANTS; i++)
-    pthread_join(thr_immig[i], NULL);
+      i = 0;
+    }
 
   finish();
-
 
   sem_destroy(&no_judge);
   sem_destroy(&exit_sem);
@@ -186,5 +186,5 @@ int main()
   pthread_cond_destroy(&confirmed);
   pthread_cond_destroy(&all_signed_in);
 
-  return 0;
+  return i;
 }

@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-void init(void);
+int init(void);
 
 void finish(void);
 

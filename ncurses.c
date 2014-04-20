@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   /* Initialize the window parameters */
   init_win_params(&win);
   print_win_params(&win);
-
+  curs_set(0);
   attron(COLOR_PAIR(1));
   refresh();
   attroff(COLOR_PAIR(1));
@@ -58,14 +58,14 @@ void init_win_params(WIN * p_win)
   p_win->starty = (LINES - p_win->height) / 2;
   p_win->startx = (COLS - p_win->width) / 2;
 
-  p_win->border.ls = '|';
-  p_win->border.rs = '|';
-  p_win->border.ts = '-';
-  p_win->border.bs = '-';
-  p_win->border.tl = '+';
-  p_win->border.tr = '+';
-  p_win->border.bl = '+';
-  p_win->border.br = '+';
+  p_win->border.ls = ACS_VLINE;
+  p_win->border.rs = ACS_VLINE;
+  p_win->border.ts = ACS_HLINE;
+  p_win->border.bs = ACS_HLINE;
+  p_win->border.tl = ACS_ULCORNER;
+  p_win->border.tr = ACS_URCORNER;
+  p_win->border.bl = ACS_LLCORNER;
+  p_win->border.br = ACS_LRCORNER;
 
 
 }
@@ -170,7 +170,7 @@ void chair_spec(WIN * p_win, bool flag, int i)
 
   if (flag == FALSE)
       for (j = 0; j < 6; j++)
-	mvprintw(y + j, x, cadeira[j]);
+	mvaddstr(y + j, x, cadeira[j]);
   else
     {
 
