@@ -9,4 +9,4 @@ projeto: display.o
 .PHONY: clean
 
 clean:
-	rm -f *.o $(BINS)
+	$(RM) *.o $(BINS)
