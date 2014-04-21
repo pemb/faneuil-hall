@@ -17,7 +17,7 @@ int immigs[IMMIGRANTS];
 #define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
 
 char juiz_entrou[] = "The judge is in.";
-
+/* Função que imprime um sprite na janela win, com início nas coordenadas x,y */
 void draw_sprite( WINDOW * win, char** sprite, int y, int x)
 {
   int p;
@@ -25,7 +25,7 @@ void draw_sprite( WINDOW * win, char** sprite, int y, int x)
   for(p=0; sprite[p] != NULL; p++)
     mvwaddstr(win, y + p, x, sprite[p]);
 }
-
+/* Função que apaga um sprite na janela win, nas coordenadas x,y */
 void erase_sprite( WINDOW * win, char ** sprite, int y, int x)
 {
   int p;
@@ -33,7 +33,7 @@ void erase_sprite( WINDOW * win, char ** sprite, int y, int x)
   for (p = 0; sprite[p] != NULL; p++)
     mvwhline(win, y + p, x, ' ', strlen(sprite[p]));
 }
-
+/* Função que desenha o salão, como dois retângulos */
 void draw_borders(void)
 {
   /* desenha perímetro do hall */
@@ -45,7 +45,7 @@ void draw_borders(void)
   mvaddch(LINES-1, OUTSIDE_SIZE, ACS_BTEE);
 }
 
-
+/* Função que inicializa a interface, e cria as janelas */
 int init(void)
 {
 
@@ -81,7 +81,7 @@ void finish(void)
   endwin();
 }
 
-
+/* Função que desenha um espectador na esquerda */
 int spec_arrive(void)
 {
   int id;
@@ -95,6 +95,7 @@ int spec_arrive(void)
   return id;
 }
 
+/* Função que desenha um imigrante na esquerda */
 int immi_arrive(void)
 {
   int id, y, x;
@@ -109,7 +110,7 @@ int immi_arrive(void)
   return id;
 }
 
-
+/* Função que leva o espectador para o lado direito */
 void spec_enter(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -122,7 +123,7 @@ void spec_enter(int id)
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
-
+/* Função que leva o imigrante para o lado direito */
 void immi_enter(int id)
 {
   int y, x;
@@ -138,7 +139,7 @@ void immi_enter(int id)
   sleep(1);
 }
 
-
+/* Função que troca o estado do espectador para "spectating" */
 void spec_spec(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -150,7 +151,7 @@ void spec_spec(int id)
 
 }
 
-
+/* Função que troca o estado do imigrante para pegando o certificado */
 void immi_getcert(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -161,6 +162,7 @@ void immi_getcert(int id)
   sleep(1);
 }
 
+/* Função que faz o espectador ir embora do hall */
 void spec_leave(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -172,6 +174,7 @@ void spec_leave(int id)
   sleep(1);
 }
 
+/*Função que faz o imigrante ir embora do hall */
 void immi_leave(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -184,7 +187,7 @@ void immi_leave(int id)
   sleep(1);
 }
 
-
+/* Função que troca o estado do imigrante para "checking in" */
 void immi_checkin(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -195,6 +198,7 @@ void immi_checkin(int id)
   sleep(1);
 }
 
+/* Função que troca o estado do espectador para sentando */
 void immi_sit(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -204,6 +208,7 @@ void immi_sit(int id)
 
 }
 
+/* Função que troca o estado do espectador para jurando */
 void immi_swear(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
@@ -213,7 +218,7 @@ void immi_swear(int id)
   sleep(1);
 }
 
-
+/* Função que mostra que o juíz entrou ao desenhar um martelo no local do juíz */
 void judge_enter(void)
 {
   int y, x;
@@ -226,6 +231,7 @@ void judge_enter(void)
   sleep(1);
 }
 
+/* Função que troca o estado do juíz para confirmando */
 void judge_confirm(void)
 {
   int i, y, x;
@@ -245,6 +251,7 @@ void judge_confirm(void)
   sleep(1);
 }
 
+/* Função que faz o juíz ir embora apagando-o da tela */
 void judge_leave(void)
 {
   int y, x;
