@@ -13,6 +13,50 @@ static WINDOW * hall, * outside;
 char juiz_entrou[] = "O Juiz esta na sala.";
 
 
+char smallMan [][6] = 
+  {
+    " (}  ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+  };
+
+char immi[][8] = /* ou 10 */
+  {
+    "  /-\\  ",
+    "  \\_/  ",
+    " /\\Y/\\ ",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+  };
+/* Desenha um spectator na posicao y,x desejada */
+void draw_spec(int y, int x) {
+  int p;
+  pthread_mutex_lock(&ncurses_lock);
+  for(p=0; p<6; p++)
+    mvaddstr(y + p, x, smallMan[p]);
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
+  sleep(1);
+}
+
+void draw_immi(int y, int x) {
+  int p;
+  pthread_mutex_lock(&ncurses_lock);
+  for(p=0; p<8; p++)
+    mvaddstr(y + p, x, immi[p]);
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);
+  sleep(1);
+}
+
+
+
 void draw_borders(void)
 {
   /* desenha perímetro do hall */
@@ -47,6 +91,9 @@ int init(void)
   hall = newwin(LINES-2, COLS-(OUTSIDE_SIZE+2), 1, OUTSIDE_SIZE+1);
   
   sleep(10);
+
+  draw_borders();
+  /*sleep(10);*/
   
   return 0;
 }
@@ -60,6 +107,7 @@ void spec_enter(void)
 {
   pthread_mutex_lock(&ncurses_lock);
   mvaddstr(1,1,"Spectator enters.\n");
+  /* mvaddstr(1,1,"Spectator enters.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -68,7 +116,7 @@ void spec_enter(void)
 void spec_spec(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Spectator spectates.\n");
+  /*addstr("Spectator spectates.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -78,7 +126,7 @@ void spec_spec(void)
 void spec_leave(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Spectator leaves.\n");
+  /* addstr("Spectator leaves.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -87,7 +135,7 @@ void spec_leave(void)
 void immi_getcert(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant gets certificate.\n");
+  /* addstr("Immigrant gets certificate.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -96,7 +144,7 @@ void immi_getcert(void)
 void immi_leave(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant leaves.\n");
+  /* addstr("Immigrant leaves.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -105,7 +153,7 @@ void immi_leave(void)
 void immi_enter(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant enters.\n");
+  /*addstr("Immigrant enters.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -114,7 +162,7 @@ void immi_enter(void)
 void immi_checkin(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant checks in.\n");
+  /* addstr("Immigrant checks in.\n"); */
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -123,7 +171,7 @@ void immi_checkin(void)
 void immi_sit(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant sits down.\n");
+  /* addstr("Immigrant sits down.\n"); */
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -133,7 +181,7 @@ void immi_sit(void)
 void immi_swear(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Immigrant swears.\n");
+  /* addstr("Immigrant swears.\n"); */
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -142,7 +190,7 @@ void immi_swear(void)
 void judge_enter(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Judge enters.\n");
+  /*  addstr("Judge enters.\n"); */
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -151,7 +199,7 @@ void judge_enter(void)
 void judge_confirm(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Judge confirms.\n");
+  /* addstr("Judge confirms.\n");*/
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -160,8 +208,9 @@ void judge_confirm(void)
 void judge_leave(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  addstr("Judge leaves.\n");
+  /*addstr("Judge leaves.\n"); */
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
+
