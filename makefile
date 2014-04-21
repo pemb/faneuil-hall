@@ -4,7 +4,7 @@ BINS= projeto ncurses
 
 all: $(BINS)
 
-projeto: display.o
+projeto: projeto.o display.o
 
 .PHONY: clean
 

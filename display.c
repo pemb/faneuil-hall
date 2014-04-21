@@ -1,5 +1,4 @@
 #include "display.h"
-#include <stdio.h>
 #include <unistd.h>
 #include <curses.h>
 #include <pthread.h>
@@ -7,24 +6,25 @@
 
 pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 
-/* static WINDOW * hall, outside; */
+static WINDOW * hall, * outside;
 
-#define BORDER 5
+#define OUTSIDE_SIZE COLS/4
 
 char juiz_entrou[] = "O Juiz esta na sala.";
 
 
-void draw_hall(void)
+void draw_borders(void)
 {
   /* desenha perímetro do hall */
   box(stdscr, 0, 0);
 
   /* desenha divisão da esquerda */
-  mvaddch(0, COLS/4, ACS_TTEE);
-  mvvline(1, COLS/4, ACS_VLINE, LINES-2);
-  mvaddch(LINES-1, COLS/4, ACS_BTEE);
+  mvaddch(0, OUTSIDE_SIZE, ACS_TTEE);
+  mvvline(1, OUTSIDE_SIZE, ACS_VLINE, LINES-2);
+  mvaddch(LINES-1, OUTSIDE_SIZE, ACS_BTEE);
   refresh();
 }
+ 
 
 int init(void)
 {
@@ -41,7 +41,11 @@ int init(void)
   noecho();
   curs_set(0);
 
-  draw_hall();
+  draw_borders();
+
+  outside = newwin(LINES-2, OUTSIDE_SIZE-1, 1, 1);
+  hall = newwin(LINES-2, COLS-(OUTSIDE_SIZE+2), 1, OUTSIDE_SIZE+1);
+  
   sleep(10);
   
   return 0;
