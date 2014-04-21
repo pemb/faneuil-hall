@@ -1,4 +1,4 @@
-CFLAGS= -Wall --pedantic -g -Og
+CFLAGS= -Wall --pedantic -g -O0
 LDLIBS= -lncurses -pthread
 BINS= projeto
 

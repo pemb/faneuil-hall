@@ -18,7 +18,8 @@ int immigs[IMMIGRANTS];
 
 char juiz_entrou[] = "The judge is in.";
 
-void draw_sprite( WINDOW * win, char** sprite, int y, int x) {
+void draw_sprite( WINDOW * win, char** sprite, int y, int x)
+{
   int p;
   /* escreve as strings */
   for(p=0; sprite[p] != NULL; p++)
@@ -43,7 +44,7 @@ void draw_borders(void)
   mvvline(1, OUTSIDE_SIZE, ACS_VLINE, LINES-2);
   mvaddch(LINES-1, OUTSIDE_SIZE, ACS_BTEE);
 }
- 
+
 
 int init(void)
 {
@@ -55,21 +56,21 @@ int init(void)
       fprintf (stderr, "Your terminal does not support color.\n");
       return 1;
     }
-  start_color();		
-  cbreak();			
-  keypad(stdscr, TRUE);		
+  start_color();
+  cbreak();
+  keypad(stdscr, TRUE);
   noecho();
   curs_set(0);
 
   /* desenha as linhas */
 
   draw_borders();
-  
+
   /* cria janelas do lado de fora e do hall, DESENHEM AQUI PFVR */
 
   outside = newwin(LINES-2, OUTSIDE_SIZE-1, 1, 1);
   hall = newwin(LINES-2, COLS-(OUTSIDE_SIZE+2), 1, OUTSIDE_SIZE+1);
-  
+
   refresh();
 
   return 0;
@@ -79,6 +80,7 @@ void finish(void)
 {
   endwin();
 }
+
 
 int spec_arrive(void)
 {
@@ -106,6 +108,7 @@ int immi_arrive(void)
   pthread_mutex_unlock(&ncurses_lock);
   return id;
 }
+
 
 void spec_enter(int id)
 {
@@ -139,17 +142,21 @@ void immi_enter(int id)
 void spec_spec(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  erase_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
+  draw_sprite(hall, espectador, 0, (ESPECTADOR_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
-  
+
 }
 
 
 void immi_getcert(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  erase_sprite(hall, swear, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  draw_sprite(hall, award, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
@@ -165,13 +172,13 @@ void spec_leave(int id)
   sleep(1);
 }
 
-
 void immi_leave(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
   immigs[id] = NOT_PRESENT;
   /* só apaga */
   erase_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  erase_sprite(hall, award, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -181,7 +188,9 @@ void immi_leave(int id)
 void immi_checkin(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  erase_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  draw_sprite(hall, immic, SPEC_HEIGHT+1, (IMMIC_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
@@ -198,10 +207,12 @@ void immi_sit(int id)
 void immi_swear(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  draw_sprite(hall, swear, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
+
 
 void judge_enter(void)
 {
@@ -217,8 +228,19 @@ void judge_enter(void)
 
 void judge_confirm(void)
 {
+  int i, y, x;
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  getmaxyx(hall, y, x);
+  for (i=0;i<3;i++) {
+    erase_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+    mvwaddstr(hall, y/2, x/2, "CONFIRMED!"); /* ajeitar o lugar */
+    wrefresh(hall);
+    sleep(0.2);
+    draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+    mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
+    wrefresh(hall);
+    sleep(0.2);
+  }
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
@@ -230,7 +252,7 @@ void judge_leave(void)
   getmaxyx(hall, y, x);
   /* apaga */
   erase_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
-

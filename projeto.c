@@ -28,7 +28,7 @@ void *spectator(void *v)
   while (1)
     {
       id = spec_arrive();
-      
+
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
       spec_enter(id);
@@ -54,7 +54,7 @@ void *immigrant(void *v)
   int id;
   while (1)
     {
-      
+
       id = immi_arrive();
       /* turnstile pra entrar no hall */
       sem_wait(&no_judge);
@@ -67,7 +67,7 @@ void *immigrant(void *v)
 
       /* o último a fazer checkin avisa o judge */
       if (entered == ++checked && judge_inside)
-	pthread_cond_signal(&all_signed_in);
+        pthread_cond_signal(&all_signed_in);
 
       immi_checkin(id);
       immi_sit(id);
@@ -160,7 +160,7 @@ int main()
   if (!(i = init()))
     {
 
-      for (i = 0; i < IMMIGRANTS; i++) 
+      for (i = 0; i < IMMIGRANTS; i++)
 	pthread_create(thr_immig + i, NULL, immigrant, NULL);
 
       for (i = 0; i < SPECTATORS; i++)
