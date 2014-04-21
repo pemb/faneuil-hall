@@ -18,6 +18,9 @@ void init_win_params(WIN * p_win);
 void print_win_params(WIN * p_win);
 void create_box(WIN * win, bool flag);
 
+void hammer(WIN *);
+void drawEveryOne(WIN *, int, int);
+
 #define qtd_cadeiras 8
 #define spectadores  8
 
@@ -192,7 +195,7 @@ char cadeira[][10] =
     " W     W ",
   };
         
-char immi[][8] = //ou 10
+char immi[][8] = /* ou 10 */
   {
     "  /-\\  ",
     "  \\_/  ",
@@ -228,7 +231,7 @@ void chair_spec(WIN * p_win, bool flag, int i)
 
 void hammer(WIN * p_win) {
 
- int x, y, w, h, x1, y1, j;
+  int x, y, w, h, x1, y1, j;  /* size; */
 
   x1 = p_win->startx;
   y1 = p_win->starty;
@@ -241,7 +244,7 @@ void hammer(WIN * p_win) {
 
   for (j = 0; j < 6; j++)
     mvaddstr(y + j, x, martelo[j]);
-  int size = strlen(juiz_entrou);
+  /* size = strlen(juiz_entrou); */
   /*for (j =0; j < size; j++)
     mvaddch(y-1, x-1+j, ' ');
     erasePart(p_win, 18, 4, x, y);*/

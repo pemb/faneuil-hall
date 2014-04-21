@@ -34,14 +34,15 @@ coords immigs[IMMIGRANTS];
 void *spectator(void *v)
 {
   int id = *(int*) v;
+  int i;
   while (1)
     {
 
       if (specs[id].x == 0 && specs[id].y == 0) {
-	//Desenha na esquerda e atualiza novos valores
+	/* Desenha na esquerda e atualiza novos valores */
       }
 
-      int i;
+      
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
       spec_enter();
@@ -69,7 +70,7 @@ void *immigrant(void *v)
     {
       
       if (immigs[id].x == 0 && immigs[id].y == 0) {
-	//Desenha na esquerda e atualiza novos valores
+	/* Desenha na esquerda e atualiza novos valores */
       }
 
       /* turnstile pra entrar no hall */

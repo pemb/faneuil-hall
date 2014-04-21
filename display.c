@@ -90,14 +90,13 @@ void create_box(WIN * p_win, bool flag)
 
 int init(void)
 {
+  WIN win;
   initscr();
   if (has_colors() == FALSE)
     {
       fprintf (stderr, "Your terminal does not support color.\n");
       return 1;
     }
-  WIN win;
-  int ch;
   start_color();		/* Start the color functionality */
   cbreak();			/* Line buffering disabled, Pass on
 				 * everty thing to me           */
