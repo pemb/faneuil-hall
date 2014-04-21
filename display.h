@@ -1,6 +1,50 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+char *spec [] = 
+  {
+    " (}  ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+    "",
+  };
+
+char *immi[] = /* ou 10 */
+  {
+    "  /-\\  ",
+    "  \\_/  ",
+    "/\\Y/\\ ",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+    ""
+  };
+
+char *hammer[] = 
+  {
+    " __             ",
+    "|  | ___________",
+    "|  >:===========",
+    "|__|            ",
+    ""
+  };
+
+void draw_sprite(WINDOW *, char **, int y, int x);
+
+void erase_hammer(int y, int x);
+
+void erase_spec(int y, int x);
+
+void erase_immi(int y, int x);
+
+void erase_drawing(int y, int x, int eltos_y, int eltos_x);
+
+void draw_immi(int y, int x);
 
 void draw_spec(int y, int x);
 

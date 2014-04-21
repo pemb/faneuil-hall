@@ -12,50 +12,24 @@ static WINDOW * hall, * outside;
 
 char juiz_entrou[] = "O Juiz esta na sala.";
 
+void draw_sprite( WINDOW * win, char** sprite, int y, int x) {
+  int p;
+  pthread_mutex_lock(&ncurses_lock);
+  for(p=0; sprite[p][0] != '\0'; p++)
+    mvwaddstr(win, y + p, x, sprite[p]);
+  pthread_mutex_unlock(&ncurses_lock);
+}
 
-char smallMan [][6] = 
-  {
-    " (}  ",
-    "/|\\_/",
-    "\\|   ",
-    " |\\  ",
-    "/ |  ",
-    "` `  ",
-  };
+void erase_sprite( WINDOW * win, char ** sprite, int y, int x)
+{
+  int p;
+  pthread_mutex_lock(&ncurses_lock);
+  for (p = 0; sprite[p][0] != '\0'; p++)
+    mvwhline(win, y + p, x, ' ', strlen(sprite[p]));
+  pthread_mutex_unlock(&ncurses_lock);
+}
 
-char immi[][8] = /* ou 10 */
-  {
-    "  /-\\  ",
-    "  \\_/  ",
-    " /\\Y/\\ ",
-    "|| : ||",
-    "(|---|)",
-    " | | | ",
-    " | | | ",
-    " (/ \\) ",
-  };
 /* Desenha um spectator na posicao y,x desejada */
-void draw_spec(int y, int x) {
-  int p;
-  pthread_mutex_lock(&ncurses_lock);
-  for(p=0; p<6; p++)
-    mvaddstr(y + p, x, smallMan[p]);
-  refresh();
-  pthread_mutex_unlock(&ncurses_lock);
-  sleep(1);
-}
-
-void draw_immi(int y, int x) {
-  int p;
-  pthread_mutex_lock(&ncurses_lock);
-  for(p=0; p<8; p++)
-    mvaddstr(y + p, x, immi[p]);
-  refresh();
-  pthread_mutex_unlock(&ncurses_lock);
-  sleep(1);
-}
-
-
 
 void draw_borders(void)
 {
@@ -66,7 +40,7 @@ void draw_borders(void)
   mvaddch(0, OUTSIDE_SIZE, ACS_TTEE);
   mvvline(1, OUTSIDE_SIZE, ACS_VLINE, LINES-2);
   mvaddch(LINES-1, OUTSIDE_SIZE, ACS_BTEE);
-  refresh();
+
 }
  
 
@@ -90,11 +64,9 @@ int init(void)
   outside = newwin(LINES-2, OUTSIDE_SIZE-1, 1, 1);
   hall = newwin(LINES-2, COLS-(OUTSIDE_SIZE+2), 1, OUTSIDE_SIZE+1);
   
+  refresh();
   sleep(10);
 
-  draw_borders();
-  /*sleep(10);*/
-  
   return 0;
 }
 
@@ -191,6 +163,7 @@ void judge_enter(void)
 {
   pthread_mutex_lock(&ncurses_lock);
   /*  addstr("Judge enters.\n"); */
+  draw_hammer(LINES * 0.9, COLS * 0.8);
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
