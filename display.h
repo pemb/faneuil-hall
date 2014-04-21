@@ -1,6 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+void draw_immi(int y, int x);
 
 void draw_spec(int y, int x);
 

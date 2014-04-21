@@ -42,8 +42,8 @@ void *spectator(void *v)
       if (specs[id].x == 0 && specs[id].y == 0) {
 	/* Desenha na esquerda e atualiza novos valores */
 	draw_spec(id/2*8+2, (id%2)*8+2);
-	specs[id].x = id/2*8+2;
-	specs[id].y = (id%2)*8+2;
+	specs[id].y = id/2*8+2;
+	specs[id].x = (id%2)*8+2;
       }
 
       
@@ -75,6 +75,9 @@ void *immigrant(void *v)
       
       if (immigs[id].x == 0 && immigs[id].y == 0) {
 	/* Desenha na esquerda e atualiza novos valores */
+	draw_immi(id/2*9+2, 18 + (id%2)*9);
+	immigs[id].y = id/2*9+2;
+	immigs[id].x = 18 + (id%2)*9;
       }
 
       /* turnstile pra entrar no hall */
@@ -211,6 +214,8 @@ int main()
   pthread_mutex_destroy(&rand_lock);
   pthread_cond_destroy(&confirmed);
   pthread_cond_destroy(&all_signed_in);
+
+  free(p_id);
 
   return i;
 }
