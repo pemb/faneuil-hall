@@ -12,7 +12,7 @@ pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 #define BORDER 5
 
 char juiz_entrou[] = "O Juiz esta na sala.";
-char smallMan [][6] = 
+char *smallMan [] = 
   {
     " (}  ",
     "/|\\_/",
@@ -20,35 +20,38 @@ char smallMan [][6] =
     " |\\  ",
     "/ |  ",
     "` `  ",
+    "",
   };
 
-char immi[][8] = /* ou 10 */
+char *immi[] = /* ou 10 */
   {
     "  /-\\  ",
     "  \\_/  ",
-    " /\\Y/\\ ",
+    "/\\Y/\\ ",
     "|| : ||",
     "(|---|)",
     " | | | ",
     " | | | ",
     " (/ \\) ",
+    ""
   };
 
-char hammer[][17] = 
+char *hammer[] = 
   {
     " __             ",
     "|  | ___________",
     "|  >:===========",
     "|__|            ",
-     
+    ""
   };
 
-void draw_hammer(int y, int x) {
+void draw_sprite( WINDOW * win, char** sprite, int y, int x) {
   int p;
-  for(p=0; p<4; p++)
-    mvaddstr(y + p, x, hammer[p]);
+  pthread_mutex_lock(&ncurses_lock);
+  for(p=0; sprite[p][0] != '\0'; p++)
+    mvwaddstr( win, y + p, x, sprite[p]);
   refresh();
-
+  pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 
 }
@@ -89,15 +92,13 @@ void erase_immi(int y, int x) {
 
 }
 
-void erase_drawing(int y, int x, int eltos_y, int eltos_x) {
-  int i, j;
+void erase_block(WINDOW * win, int y, int x, int eltos_y, int eltos_x) {
+  int i;
   pthread_mutex_lock(&ncurses_lock);
-  for (i = y; i < y + eltos_y; i++)
-    for (j = x; j < x + eltos_x; j++)
-      mvaddch(i, j, ' ');
+  for (i = 0; i < eltos_y; i++)
+    mvwhline(win, y + i, x, ' ', eltos_x);
   refresh();
   pthread_mutex_unlock(&ncurses_lock);  
-
 }
 
 

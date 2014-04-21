@@ -1,7 +1,40 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-void draw_hammer(int y, int x);
+char *smallMan [] = 
+  {
+    " (}  ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+    "",
+  };
+
+char *immi[] = /* ou 10 */
+  {
+    "  /-\\  ",
+    "  \\_/  ",
+    "/\\Y/\\ ",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+    ""
+  };
+
+char *hammer[] = 
+  {
+    " __             ",
+    "|  | ___________",
+    "|  >:===========",
+    "|__|            ",
+    ""
+  };
+
+void draw_sprite(WINDOW *, char **, int y, int x);
 
 void erase_hammer(int y, int x);
 
