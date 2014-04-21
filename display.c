@@ -33,6 +33,31 @@ char immi[][8] = /* ou 10 */
     " | | | ",
     " (/ \\) ",
   };
+
+char hammer[][17] = 
+  {
+    " __             ",
+    "|  | ___________",
+    "|  >:===========",
+    "|__|            ",
+     
+  };
+
+void draw_hammer(int y, int x) {
+  int p;
+  for(p=0; p<4; p++)
+    mvaddstr(y + p, x, hammer[p]);
+  refresh();
+
+  sleep(1);
+
+}
+
+void erase_hammer(int y, int x) {
+  erase_drawing(y, x, 4, 17);
+
+}
+
 /* Desenha um spectator na posicao y,x desejada */
 void draw_spec(int y, int x) {
   int p;
@@ -201,6 +226,7 @@ void judge_enter(void)
 {
   pthread_mutex_lock(&ncurses_lock);
   /*  addstr("Judge enters.\n"); */
+  draw_hammer(LINES * 0.9, COLS * 0.8);
   refresh();
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
