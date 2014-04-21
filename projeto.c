@@ -10,6 +10,10 @@
 #define IMMIGRANTS 4
 #define JUDGE_SLEEP 1
 
+typedef struct _coords {
+  int x, y;
+} coords;
+
 sem_t no_judge;			/* 1 */
 sem_t exit_sem;			/* 0 */
 sem_t all_gone;			/* 1 */
@@ -24,11 +28,19 @@ volatile int spectators = 0;
 volatile int checked = 0;
 volatile int judge_inside = 0;
 
+coords specs[SPECTATORS];
+coords immigs[IMMIGRANTS];
 
 void *spectator(void *v)
 {
+  int id = *(int*) v;
   while (1)
     {
+
+      if (specs[id].x == 0 && specs[id].y == 0) {
+	//Desenha na esquerda e atualiza novos valores
+      }
+
       int i;
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
@@ -52,8 +64,13 @@ void *spectator(void *v)
 
 void *immigrant(void *v)
 {
+  int id = *(int*) v;
   while (1)
     {
+      
+      if (immigs[id].x == 0 && immigs[id].y == 0) {
+	//Desenha na esquerda e atualiza novos valores
+      }
 
       /* turnstile pra entrar no hall */
       sem_wait(&no_judge);
@@ -139,7 +156,7 @@ int main()
   pthread_t thr_judge;
   pthread_t thr_immig[IMMIGRANTS];
   pthread_t thr_specs[SPECTATORS];
-  int i;
+  int i, *p_id;
 
   srand(time(0));
 
@@ -156,12 +173,16 @@ int main()
   if (!(i = init()))
     {
 
-      for (i = 0; i < IMMIGRANTS; i++)
+      for (i = 0; i < IMMIGRANTS; i++) {
+	p_id = (int*) malloc(sizeof(int));
+	*p_id = i;
 	pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
-
-      for (i = 0; i < SPECTATORS; i++)
+      }
+      for (i = 0; i < SPECTATORS; i++){
+	p_id = (int*) malloc(sizeof(int));
+	*p_id = i;
 	pthread_create(thr_specs + i, NULL, spectator, (void *) &i);
-
+      }
       pthread_create(&thr_judge, NULL, judge, NULL);
 
       pthread_join(thr_judge, NULL);

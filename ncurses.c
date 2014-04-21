@@ -111,7 +111,6 @@ void create_box(WIN * p_win, bool flag)
       for (; i < qtd_cadeiras; i++)
 	chair_spec(p_win, true, i);
       drawEveryOne(p_win, y+1, x+1); 
-      apagar_immi(p_win, 2);
       hammer(p_win);
 
   } else
@@ -163,7 +162,7 @@ char bigMan [][11] =
     " `     ",
   };
 
-char smallMan [][8] = 
+char smallMan [][6] = 
   {
     " (}  ",
     "/|\\_/",
@@ -238,14 +237,14 @@ void hammer(WIN * p_win) {
   y = 0.8 * (y1 + h) + 2;
   x = 0.6 * (x1 + w) + 2;
 
-  mvaddstr(y - 1, x -1, "Juiz esta na sala");
+  mvaddstr(y - 1, x -1, juiz_entrou);
 
   for (j = 0; j < 6; j++)
     mvaddstr(y + j, x, martelo[j]);
   int size = strlen(juiz_entrou);
-  for (j =0; j < size; j++)
+  /*for (j =0; j < size; j++)
     mvaddch(y-1, x-1+j, ' ');
-  erasePart(p_win, 18, 4, x, y);
+    erasePart(p_win, 18, 4, x, y);*/
 
 }
 /** Funcao que apaga x unidades para a direita ou y unidades para a esquerda, desde x_comeco e y_comeco */
@@ -277,22 +276,22 @@ void drawEveryOne(WIN * p_win, int y_comeco, int x_comeco) {
   for (i = 0; i < 4; i++) 
     for (j=0; j < 3; j++) 
       for(p=0; p<6; p++)
-	mvaddstr(y_comeco + p + i*7, x_comeco + j*8, smallMan[p]);
+	mvaddstr(y_comeco + p + i*7, x_comeco + j*7, smallMan[p]);
 
   for (i = 0; i < 3; i++)
     for (j=3; j < 5; j++)
       for (p=0; p < 8; p++)
-	mvaddstr(y_comeco + p + i*9, x_comeco + 24 + (j-3)*8, immi[p]);
+	mvaddstr(y_comeco + p + i*9, x_comeco + 21 + (j-3)*8, immi[p]);
 }
 
 /* apagar um imigrante com id i
 y_comeco = p_win->starty +1 + i/2*9;
-x_comeco = p_win->startx +1 + 24 + (i+1)/2*8;
+x_comeco = p_win->startx +1 + 24 + i%/2*8;
 */
-void apagar_immi(WIN * p_win, int id) {
+void apagar_immi_tela_inicial(WIN * p_win, int id) {
   int x, y;
   y = p_win->starty +1 + id/2*9;
-  x = p_win->startx +1 + 24 + (id%2)*8;
+  x = p_win->startx +1 + 21 + (id%2)*8;
   
   erasePart(p_win, 8, 8, x, y);
 }
