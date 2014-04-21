@@ -11,7 +11,7 @@
 
 char *spec [] =
   {
-    "ENTREI"
+    "ENTREI",
     " (}   ",
     "/|\\_/",
     "\\|   ",
@@ -26,7 +26,7 @@ char *spec [] =
 
 char *espectador [] =
   {
-    "OUTRO?"
+    "OUTRO?",
     " (}   ",
     "/|\\_/",
     "\\|   ",
@@ -35,11 +35,27 @@ char *espectador [] =
     "` `  ",
     NULL
   };
-
-#define IMMI_HEIGHT 9
+#define IMMI_HEIGHT 8
 #define IMMI_WIDTH 8
 
 char *immi[] =
+  {
+    "  /-\\  ",
+    "  \\_/  ",
+    " /\\Y/\\",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+    NULL
+  };
+
+
+#define IMMIE_HEIGHT 9
+#define IMMIE_WIDTH 8
+
+char *immie[] =
   {
     "ENTERED!",
     "  /-\\  ",
@@ -58,7 +74,7 @@ char *immi[] =
 
 char *immic[] =
   {
-    "CHECKED!"
+    "CHECKED!",
     "  /-\\  ",
     "  \\_/  ",
     " /\\Y/\\",
@@ -71,20 +87,20 @@ char *immic[] =
   };
 
 #define SWEAR_HEIGHT 10
-#define SWEAR_WIDTH 15
+#define SWEAR_WIDTH 16
 
 char *swear[] =
   {
-    "       _.-/`)",
-    "      // / / )",
+    "       _.-/`)  ",
+    "      // / / ) ",
     "   .=// / / / )",
-    "  //`/ / / / /",
-    " // /     ` /",
-    "||         /",
-    " \\       /",
-    "  ))    .'",
-    " //    /",
-    "      /",
+    "  //`/ / / / / ",
+    " // /     ` /  ",
+    "||         /   ",
+    " \\\\       /    ",
+    "  ))    .'     ",
+    " //    /       ",
+    "      /        ",
     NULL
   };
 
@@ -133,20 +149,20 @@ char * bigMan [] =
   };
 
 #define AWARD_HEIGHT 10
-#define AWARD_WIDTH 9
+#define AWARD_WIDTH 10
 
 char * award [] =
   {
-    "   ___",
-    " .'__ '.",
+    "   ___   ",
+    " .'__ '. ",
     "/ /_ |ST\\",
     "|  | |  |",
     "\\ <___> /",
-    " ;.___.;",
-    " |::|;;|",
-    " |::/;;|",
-    " |:/`\\;|",
-    " |/   \\|",
+    " ;.___.; ",
+    " |::|;;| ",
+    " |::/;;| ",
+    " |:/`\\;| ",
+    " |/   \\| ",
       NULL
   };
 

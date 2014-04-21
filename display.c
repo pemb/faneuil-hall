@@ -9,7 +9,6 @@ pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 
 WINDOW * hall, * outside;
 
-
 /* contabiliza onde cada thread está */
 int specs[SPECTATORS];
 int immigs[IMMIGRANTS];
@@ -95,21 +94,6 @@ int spec_arrive(void)
   return id;
 }
 
-/* Função que desenha um imigrante na esquerda */
-int immi_arrive(void)
-{
-  int id, y, x;
-  pthread_mutex_lock(&ncurses_lock);
-  for (id = 0; immigs[id] != NOT_PRESENT; id++);
-  immigs[id] = OUTSIDE;
-  getmaxyx(outside, y, x);
-  /* desenha enfileirados verticalmente na direita */
-  draw_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
-  wrefresh(outside);
-  pthread_mutex_unlock(&ncurses_lock);
-  return id;
-}
-
 /* Função que leva o espectador para o lado direito */
 void spec_enter(int id)
 {
@@ -118,21 +102,6 @@ void spec_enter(int id)
   /* apaga de fora e desenha enfileirados horizontamente no topo */
   erase_sprite(outside, spec, (SPEC_HEIGHT+1)*id, 0);
   draw_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
-  wrefresh(outside);
-  wrefresh(hall);
-  pthread_mutex_unlock(&ncurses_lock);
-  sleep(1);
-}
-/* Função que leva o imigrante para o lado direito */
-void immi_enter(int id)
-{
-  int y, x;
-  pthread_mutex_lock(&ncurses_lock);
-  immigs[id] = INSIDE;
-  getmaxyx(outside, y, x);
-  /* apaga de fora e desenha enfileirados horizontamente embaixo dos spectators */
-  erase_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
-  draw_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
   wrefresh(outside);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
@@ -151,17 +120,6 @@ void spec_spec(int id)
 
 }
 
-/* Função que troca o estado do imigrante para pegando o certificado */
-void immi_getcert(int id)
-{
-  pthread_mutex_lock(&ncurses_lock);
-  erase_sprite(hall, swear, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
-  draw_sprite(hall, award, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
-  wrefresh(hall);
-  pthread_mutex_unlock(&ncurses_lock);
-  sleep(1);
-}
-
 /* Função que faz o espectador ir embora do hall */
 void spec_leave(int id)
 {
@@ -174,14 +132,33 @@ void spec_leave(int id)
   sleep(1);
 }
 
-/*Função que faz o imigrante ir embora do hall */
-void immi_leave(int id)
+/* Função que desenha um imigrante na esquerda */
+int immi_arrive(void)
 {
+  int id, y, x;
   pthread_mutex_lock(&ncurses_lock);
-  immigs[id] = NOT_PRESENT;
-  /* só apaga */
-  erase_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
-  erase_sprite(hall, award, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  for (id = 0; immigs[id] != NOT_PRESENT; id++);
+  immigs[id] = OUTSIDE;
+  getmaxyx(outside, y, x);
+  /* desenha enfileirados verticalmente na direita */
+  draw_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
+  wrefresh(outside);
+  pthread_mutex_unlock(&ncurses_lock);
+  return id;
+}
+
+
+/* Função que leva o imigrante para o lado direito */
+void immi_enter(int id)
+{
+  int y, x;
+  pthread_mutex_lock(&ncurses_lock);
+  immigs[id] = INSIDE;
+  getmaxyx(outside, y, x);
+  /* apaga de fora e desenha enfileirados horizontamente embaixo dos spectators */
+  erase_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
+  draw_sprite(hall, immie, IMMIE_HEIGHT+1, (IMMIE_WIDTH+1)*id);
+  wrefresh(outside);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -191,12 +168,13 @@ void immi_leave(int id)
 void immi_checkin(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  erase_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
-  draw_sprite(hall, immic, SPEC_HEIGHT+1, (IMMIC_WIDTH+1)*id);
+  erase_sprite(hall, immie, IMMIE_HEIGHT+1, (IMMIE_WIDTH+1)*id);
+  draw_sprite(hall, immic, IMMIC_HEIGHT+1, (IMMIC_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
+
 
 /* Função que troca o estado do espectador para sentando */
 void immi_sit(int id)
@@ -212,7 +190,31 @@ void immi_sit(int id)
 void immi_swear(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  draw_sprite(hall, swear, SPEC_HEIGHT+IMMI_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  draw_sprite(hall, swear, SPEC_HEIGHT+IMMIC_HEIGHT+5, (SWEAR_WIDTH+1)*id);
+  wrefresh(hall);
+  pthread_mutex_unlock(&ncurses_lock);
+  sleep(1);
+}
+
+/* Função que troca o estado do imigrante para pegando o certificado */
+void immi_getcert(int id)
+{
+  pthread_mutex_lock(&ncurses_lock);
+  erase_sprite(hall, swear, SPEC_HEIGHT+IMMIC_HEIGHT+5, (SWEAR_WIDTH+1)*id);
+  draw_sprite(hall, award, SPEC_HEIGHT+IMMIC_HEIGHT+5, (AWARD_WIDTH+1)*id);
+  wrefresh(hall);
+  pthread_mutex_unlock(&ncurses_lock);
+  sleep(1);
+}
+
+/*Função que faz o imigrante ir embora do hall */
+void immi_leave(int id)
+{
+  pthread_mutex_lock(&ncurses_lock);
+  immigs[id] = NOT_PRESENT;
+  /* só apaga */
+  erase_sprite(hall, immic, IMMIC_HEIGHT+1, (IMMIC_WIDTH+1)*id);
+  erase_sprite(hall, award, SPEC_HEIGHT+IMMIC_HEIGHT+5, (AWARD_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
