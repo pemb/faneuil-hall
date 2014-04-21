@@ -1,74 +1,38 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-char *spec [] = 
-  {
-    " (}  ",
-    "/|\\_/",
-    "\\|   ",
-    " |\\  ",
-    "/ |  ",
-    "` `  ",
-    "",
-  };
+#define SPECTATORS 3
+#define IMMIGRANTS 3
 
-char *immi[] = /* ou 10 */
-  {
-    "  /-\\  ",
-    "  \\_/  ",
-    "/\\Y/\\ ",
-    "|| : ||",
-    "(|---|)",
-    " | | | ",
-    " | | | ",
-    " (/ \\) ",
-    ""
-  };
-
-char *hammer[] = 
-  {
-    " __             ",
-    "|  | ___________",
-    "|  >:===========",
-    "|__|            ",
-    ""
-  };
-
-void draw_sprite(WINDOW *, char **, int y, int x);
-
-void erase_hammer(int y, int x);
-
-void erase_spec(int y, int x);
-
-void erase_immi(int y, int x);
-
-void erase_drawing(int y, int x, int eltos_y, int eltos_x);
-
-void draw_immi(int y, int x);
-
-void draw_spec(int y, int x);
+#define NOT_PRESENT 0
+#define OUTSIDE 1
+#define INSIDE 2
 
 int init(void);
 
 void finish(void);
 
-void spec_enter(void);
+int spec_arrive(void);
 
-void spec_spec(void);
+void spec_enter(int);
 
-void spec_leave(void);
+void spec_spec(int);
 
-void immi_getcert(void);
+void spec_leave(int);
 
-void immi_leave(void);
+int immi_arrive(void);
 
-void immi_enter(void);
+void immi_getcert(int);
 
-void immi_checkin(void);
+void immi_leave(int);
 
-void immi_sit(void);
+void immi_enter(int);
 
-void immi_swear(void);
+void immi_checkin(int);
+
+void immi_sit(int);
+
+void immi_swear(int);
 
 void judge_enter(void);
 

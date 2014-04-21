@@ -1,10 +1,12 @@
-CFLAGS= -Wall -Werror --pedantic
+CFLAGS= -Wall --pedantic -g -Og
 LDLIBS= -lncurses -pthread
-BINS= projeto ncurses
+BINS= projeto
 
 all: $(BINS)
 
 projeto: projeto.o display.o
+
+display.o: sprites.h
 
 .PHONY: clean
 

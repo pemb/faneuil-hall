@@ -1,18 +1,11 @@
 #include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <semaphore.h>
 #include "display.h"
 
-#define SPECTATORS 10
 #define SPECTATOR_MAX_WAIT 2*(SPECTATORS+IMMIGRANTS)
-#define IMMIGRANTS 4
-#define JUDGE_SLEEP 1
-
-typedef struct _coords {
-  int x, y;
-} coords;
+#define JUDGE_SLEEP 3
 
 sem_t no_judge;			/* 1 */
 sem_t exit_sem;			/* 0 */
@@ -28,34 +21,22 @@ volatile int spectators = 0;
 volatile int checked = 0;
 volatile int judge_inside = 0;
 
-coords specs[SPECTATORS];
-coords immigs[IMMIGRANTS];
 
 void *spectator(void *v)
 {
-  int id = *(int*) v;
-  int i;
-  /* printf("Meu id: %d\n", id);*/
+  int i, id;
   while (1)
     {
-
-      if (specs[id].x == 0 && specs[id].y == 0) {
-	/* Desenha na esquerda e atualiza novos valores */
-	draw_spec(id/2*8+2, (id%2)*8+2);
-	specs[id].y = id/2*8+2;
-	specs[id].x = (id%2)*8+2;
-      }
-      if (id == 1)
-	erase_spec(specs[id].y, specs[id].x);
+      id = spec_arrive();
       
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
-      spec_enter();
+      spec_enter(id);
       sem_post(&no_judge);
 
-      spec_spec();
+      spec_spec(id);
 
-      /* dorme um tempo aleatório */
+      /* dorme um tempo aleatório antes de sair */
 
       pthread_mutex_lock(&rand_lock);
       i = (rand() % SPECTATOR_MAX_WAIT) + 1;
@@ -63,30 +44,22 @@ void *spectator(void *v)
 
       sleep(i);
 
-      spec_leave();
+      spec_leave(id);
     }
   return NULL;
 }
 
 void *immigrant(void *v)
 {
-  int id = *(int*) v;
+  int id;
   while (1)
     {
       
-      if (immigs[id].x == 0 && immigs[id].y == 0) {
-	/* Desenha na esquerda e atualiza novos valores */
-	draw_immi(id/2*9+2, 18 + (id%2)*9);
-	immigs[id].y = id/2*9+2;
-	immigs[id].x = 18 + (id%2)*9;
-      }
-      
-      if (id == 3)
-	erase_immi(immigs[id].y, immigs[id].x);
+      id = immi_arrive();
       /* turnstile pra entrar no hall */
       sem_wait(&no_judge);
       entered++;
-      immi_enter();
+      immi_enter(id);
       sem_post(&no_judge);
 
 
@@ -96,20 +69,20 @@ void *immigrant(void *v)
       if (entered == ++checked && judge_inside)
 	pthread_cond_signal(&all_signed_in);
 
-      immi_checkin();
-      immi_sit();
+      immi_checkin(id);
+      immi_sit(id);
 
       /* esperam a confirmação e soltam o mutex */
       pthread_cond_wait(&confirmed, &mutex);
       pthread_mutex_unlock(&mutex);
 
       /* juram e pegam certificado concorrentemente */
-      immi_swear();
-      immi_getcert();
+      immi_swear(id);
+      immi_getcert(id);
 
       /* turnstile da saída */
       sem_wait(&exit_sem);
-      immi_leave();
+      immi_leave(id);
 
       /* último a sair */
       if (!--checked)
@@ -167,8 +140,9 @@ int main()
   pthread_t thr_judge;
   pthread_t thr_immig[IMMIGRANTS];
   pthread_t thr_specs[SPECTATORS];
-  int i, *p_id;
+  int i;
 
+  /* inicializando as putaria tudo */
   srand(time(0));
 
   sem_init(&no_judge, 0, 1);
@@ -181,19 +155,17 @@ int main()
   pthread_cond_init(&confirmed, NULL);
   pthread_cond_init(&all_signed_in, NULL);
 
+  /* se init retornar algo é porque zicou a inicialização */
+
   if (!(i = init()))
     {
 
-      for (i = 0; i < IMMIGRANTS; i++) {
-	p_id = (int*) malloc(sizeof(int));
-	*p_id = i;
-	pthread_create(thr_immig + i, NULL, immigrant, (void *) p_id);
-      }
-      for (i = 0; i < SPECTATORS; i++){
-	p_id = (int*) malloc(sizeof(int));
-	*p_id = i;
-	pthread_create(thr_specs + i, NULL, spectator, (void *) p_id);
-      }
+      for (i = 0; i < IMMIGRANTS; i++) 
+	pthread_create(thr_immig + i, NULL, immigrant, NULL);
+
+      for (i = 0; i < SPECTATORS; i++)
+	pthread_create(thr_specs + i, NULL, spectator, NULL);
+
       pthread_create(&thr_judge, NULL, judge, NULL);
 
       pthread_join(thr_judge, NULL);
@@ -207,6 +179,8 @@ int main()
       i = 0;
     }
 
+  /* clean-up que nunca roda já que o programa é loop inifinito hu3 */
+
   finish();
 
   sem_destroy(&no_judge);
@@ -217,8 +191,6 @@ int main()
   pthread_mutex_destroy(&rand_lock);
   pthread_cond_destroy(&confirmed);
   pthread_cond_destroy(&all_signed_in);
-
-  free(p_id);
 
   return i;
 }

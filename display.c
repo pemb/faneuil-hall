@@ -1,4 +1,5 @@
 #include "display.h"
+#include "sprites.h"
 #include <unistd.h>
 #include <curses.h>
 #include <pthread.h>
@@ -6,30 +7,31 @@
 
 pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 
-static WINDOW * hall, * outside;
+WINDOW * hall, * outside;
 
-#define OUTSIDE_SIZE COLS/4
 
-char juiz_entrou[] = "O Juiz esta na sala.";
+/* contabiliza onde cada thread está */
+int specs[SPECTATORS];
+int immigs[IMMIGRANTS];
+
+#define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
+
+char juiz_entrou[] = "The judge is in.";
 
 void draw_sprite( WINDOW * win, char** sprite, int y, int x) {
   int p;
-  pthread_mutex_lock(&ncurses_lock);
-  for(p=0; sprite[p][0] != '\0'; p++)
+  /* escreve as strings */
+  for(p=0; sprite[p] != NULL; p++)
     mvwaddstr(win, y + p, x, sprite[p]);
-  pthread_mutex_unlock(&ncurses_lock);
 }
 
 void erase_sprite( WINDOW * win, char ** sprite, int y, int x)
 {
   int p;
-  pthread_mutex_lock(&ncurses_lock);
-  for (p = 0; sprite[p][0] != '\0'; p++)
+  /* escreve linhas em branco do tamanho das strings */
+  for (p = 0; sprite[p] != NULL; p++)
     mvwhline(win, y + p, x, ' ', strlen(sprite[p]));
-  pthread_mutex_unlock(&ncurses_lock);
 }
-
-/* Desenha um spectator na posicao y,x desejada */
 
 void draw_borders(void)
 {
@@ -40,12 +42,13 @@ void draw_borders(void)
   mvaddch(0, OUTSIDE_SIZE, ACS_TTEE);
   mvvline(1, OUTSIDE_SIZE, ACS_VLINE, LINES-2);
   mvaddch(LINES-1, OUTSIDE_SIZE, ACS_BTEE);
-
 }
  
 
 int init(void)
 {
+
+  /* inicializa uma porrada de coisa */
   initscr();
   if (has_colors() == FALSE)
     {
@@ -54,18 +57,20 @@ int init(void)
     }
   start_color();		
   cbreak();			
-				
   keypad(stdscr, TRUE);		
   noecho();
   curs_set(0);
 
+  /* desenha as linhas */
+
   draw_borders();
+  
+  /* cria janelas do lado de fora e do hall, DESENHEM AQUI PFVR */
 
   outside = newwin(LINES-2, OUTSIDE_SIZE-1, 1, 1);
   hall = newwin(LINES-2, COLS-(OUTSIDE_SIZE+2), 1, OUTSIDE_SIZE+1);
   
   refresh();
-  sleep(10);
 
   return 0;
 }
@@ -75,96 +80,137 @@ void finish(void)
   endwin();
 }
 
-void spec_enter(void)
+int spec_arrive(void)
+{
+  int id;
+  pthread_mutex_lock(&ncurses_lock);
+  for (id = 0; specs[id] != NOT_PRESENT; id++);
+  specs[id] = OUTSIDE;
+  /* desenha enfileirados verticalmente na esquerda */
+  draw_sprite(outside, spec, (SPEC_HEIGHT+1)*id, 0);
+  wrefresh(outside);
+  pthread_mutex_unlock(&ncurses_lock);
+  return id;
+}
+
+int immi_arrive(void)
+{
+  int id, y, x;
+  pthread_mutex_lock(&ncurses_lock);
+  for (id = 0; immigs[id] != NOT_PRESENT; id++);
+  immigs[id] = OUTSIDE;
+  getmaxyx(outside, y, x);
+  /* desenha enfileirados verticalmente na direita */
+  draw_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
+  wrefresh(outside);
+  pthread_mutex_unlock(&ncurses_lock);
+  return id;
+}
+
+void spec_enter(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  mvaddstr(1,1,"Spectator enters.\n");
-  /* mvaddstr(1,1,"Spectator enters.\n");*/
-  refresh();
+  specs[id] = INSIDE;
+  /* apaga de fora e desenha enfileirados horizontamente no topo */
+  erase_sprite(outside, spec, (SPEC_HEIGHT+1)*id, 0);
+  draw_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
+  wrefresh(outside);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
-void spec_spec(void)
+void immi_enter(int id)
+{
+  int y, x;
+  pthread_mutex_lock(&ncurses_lock);
+  immigs[id] = INSIDE;
+  getmaxyx(outside, y, x);
+  /* apaga de fora e desenha enfileirados horizontamente embaixo dos spectators */
+  erase_sprite(outside, immi, (IMMI_HEIGHT+1)*id, x-IMMI_WIDTH);
+  draw_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  wrefresh(outside);
+  wrefresh(hall);
+  pthread_mutex_unlock(&ncurses_lock);
+  sleep(1);
+}
+
+
+void spec_spec(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /*addstr("Spectator spectates.\n");*/
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
   
 }
 
-void spec_leave(void)
+
+void immi_getcert(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Spectator leaves.\n");*/
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
-void immi_getcert(void)
+void spec_leave(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Immigrant gets certificate.\n");*/
-  refresh();
+  specs[id] = NOT_PRESENT;
+  /* só apaga */
+  erase_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
-void immi_leave(void)
+
+void immi_leave(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Immigrant leaves.\n");*/
-  refresh();
+  immigs[id] = NOT_PRESENT;
+  /* só apaga */
+  erase_sprite(hall, immi, SPEC_HEIGHT+1, (IMMI_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
-void immi_enter(void)
+
+void immi_checkin(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /*addstr("Immigrant enters.\n");*/
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
-void immi_checkin(void)
+void immi_sit(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Immigrant checks in.\n"); */
-  refresh();
-  pthread_mutex_unlock(&ncurses_lock);
-  sleep(1);
-}
-
-void immi_sit(void)
-{
-  pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Immigrant sits down.\n"); */
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 
 }
 
-void immi_swear(void)
+void immi_swear(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Immigrant swears.\n"); */
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void judge_enter(void)
 {
+  int y, x;
   pthread_mutex_lock(&ncurses_lock);
-  /*  addstr("Judge enters.\n"); */
-  draw_hammer(LINES * 0.9, COLS * 0.8);
-  refresh();
+  getmaxyx(hall, y, x);
+  /* desenha centralizado em baixo */
+  draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
@@ -172,17 +218,18 @@ void judge_enter(void)
 void judge_confirm(void)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* addstr("Judge confirms.\n");*/
-  refresh();
+  /* TODO */
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
 
 void judge_leave(void)
 {
+  int y, x;
   pthread_mutex_lock(&ncurses_lock);
-  /*addstr("Judge leaves.\n"); */
-  refresh();
+  getmaxyx(hall, y, x);
+  /* apaga */
+  erase_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
