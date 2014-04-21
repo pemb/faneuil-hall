@@ -35,11 +35,15 @@ void *spectator(void *v)
 {
   int id = *(int*) v;
   int i;
+  /* printf("Meu id: %d\n", id);*/
   while (1)
     {
 
       if (specs[id].x == 0 && specs[id].y == 0) {
 	/* Desenha na esquerda e atualiza novos valores */
+	draw_spec(id/2*8+2, (id%2)*8+2);
+	specs[id].x = id/2*8+2;
+	specs[id].y = (id%2)*8+2;
       }
 
       
@@ -177,12 +181,12 @@ int main()
       for (i = 0; i < IMMIGRANTS; i++) {
 	p_id = (int*) malloc(sizeof(int));
 	*p_id = i;
-	pthread_create(thr_immig + i, NULL, immigrant, (void *) &i);
+	pthread_create(thr_immig + i, NULL, immigrant, (void *) p_id);
       }
       for (i = 0; i < SPECTATORS; i++){
 	p_id = (int*) malloc(sizeof(int));
 	*p_id = i;
-	pthread_create(thr_specs + i, NULL, spectator, (void *) &i);
+	pthread_create(thr_specs + i, NULL, spectator, (void *) p_id);
       }
       pthread_create(&thr_judge, NULL, judge, NULL);
 

@@ -1,17 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-typedef struct _win_border_struct {
-  char ls, rs, ts, bs, tl, tr, bl, br;
-} WIN_BORDER;
 
-typedef struct _WIN_struct {
-
-  int startx, starty;
-  int height, width;
-  WIN_BORDER border;
-  char barra;
-} WIN;
+void draw_spec(int y, int x);
 
 int init(void);
 
