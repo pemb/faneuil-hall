@@ -45,7 +45,8 @@ void *spectator(void *v)
 	specs[id].y = id/2*8+2;
 	specs[id].x = (id%2)*8+2;
       }
-
+      if (id == 1)
+	erase_spec(specs[id].y, specs[id].x);
       
       /* turnstile para entrar no hall */
       sem_wait(&no_judge);
@@ -79,7 +80,9 @@ void *immigrant(void *v)
 	immigs[id].y = id/2*9+2;
 	immigs[id].x = 18 + (id%2)*9;
       }
-
+      
+      if (id == 3)
+	erase_immi(immigs[id].y, immigs[id].x);
       /* turnstile pra entrar no hall */
       sem_wait(&no_judge);
       entered++;

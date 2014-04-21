@@ -43,7 +43,7 @@ void draw_spec(int y, int x) {
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
-
+/* Desenha imigrante na coord y,x */
 void draw_immi(int y, int x) {
   int p;
   pthread_mutex_lock(&ncurses_lock);
@@ -54,6 +54,26 @@ void draw_immi(int y, int x) {
   sleep(1);
 }
 
+void erase_spec(int y, int x) {
+  erase_drawing(y, x, 6, 6);
+
+}
+
+void erase_immi(int y, int x) {
+  erase_drawing(y, x, 8, 8);
+
+}
+
+void erase_drawing(int y, int x, int eltos_y, int eltos_x) {
+  int i, j;
+  pthread_mutex_lock(&ncurses_lock);
+  for (i = y; i < y + eltos_y; i++)
+    for (j = x; j < x + eltos_x; j++)
+      mvaddch(i, j, ' ');
+  refresh();
+  pthread_mutex_unlock(&ncurses_lock);  
+
+}
 
 
 void draw_hall(void)

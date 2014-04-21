@@ -1,6 +1,12 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+void erase_spec(int y, int x);
+
+void erase_immi(int y, int x);
+
+void erase_drawing(int y, int x, int eltos_y, int eltos_x);
+
 void draw_immi(int y, int x);
 
 void draw_spec(int y, int x);
