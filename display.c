@@ -30,7 +30,6 @@ static int immigs[IMMIGRANTS];
 
 #define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
 
-char juiz_entrou[] = "The judge is in.";
 /* Função que imprime um sprite na janela win, com início nas coordenadas x,y */
 sprite* draw_sprite( WINDOW * win, char** charmap, int y, int x)
 {
@@ -261,13 +260,13 @@ void judge_confirm(void)
 {
   int i;
   pthread_mutex_lock(&ncurses_lock);
-  for (i=0;i<3;i++) {
-    mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf); /* ajeitar o lugar */
+  for (i=0;i<IMMIGRANTS;i++) {
+    mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf);
     wrefresh(hall);
     sleep(1);
   }
   
-  for (i = 0; i < 3; i++)
+  for (i = 0; i < IMMIGRANTS; i++)
     mvwhline(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, ' ', strlen(conf));
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);

@@ -135,7 +135,6 @@ void *judge(void *v)
   return NULL;
 }
 
-
 int main()
 {
   pthread_t thr_judge;

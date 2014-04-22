@@ -1,8 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#define SPECTATORS 3
-#define IMMIGRANTS 3
+#define SPECTATORS 5
+#define IMMIGRANTS 4
 
 #define NOT_PRESENT 0
 #define OUTSIDE 1
