@@ -5,7 +5,7 @@
 #include "display.h"
 #include <stdio.h>
 
-#define SPECTATOR_MAX_WAIT 2*(SPECTATORS+IMMIGRANTS)
+#define SPECTATOR_MAX_WAIT 2*(num_specs+num_immigs)
 #define JUDGE_SLEEP 3
 
 /* tudo static pra evitar conflitos */
@@ -19,6 +19,7 @@ static pthread_mutex_t rand_lock;
 static pthread_cond_t confirmed;
 static pthread_cond_t all_signed_in;
 
+static int num_immigs, num_specs;
 static int entered = 0;
 static int checked = 0;
 static int judge_inside = 0;
@@ -141,7 +142,8 @@ int main()
   pthread_t thr_judge;
   pthread_t *thr_immig;
   pthread_t *thr_specs;
-  int i, num_immigs, num_specs;
+  int i;
+  
 
   /* inicializando as putaria tudo */
   srand(time(0));
