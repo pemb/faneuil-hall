@@ -6,6 +6,15 @@
 /* sprites (desenhos) são vetor de apontadores pra strings das linhas
    o último ponteiro é NULL, assim que draw_sprite sabe onde parar */
 
+#define CONFIRMED_WIDTH 10
+#define CONFIRMED_LENGTH 1
+
+char *confirmed[]=
+  {
+    "CONFIRMED!",
+    NULL
+  };
+
 #define SPEC_HEIGHT 7
 #define SPEC_WIDTH 6
 

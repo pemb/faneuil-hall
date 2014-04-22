@@ -6,50 +6,53 @@
 #include <string.h>
 #include <malloc.h>
 
-pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
+/* tudo static pra não conflitar com coisas externas */
 
-WINDOW * hall, * outside;
+static pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 
-typedef struct _drawing {
-  int y, x;
-  char **sprite;
+static WINDOW * hall, * outside;
+
+typedef struct _sprite {
   WINDOW * window;
-} drawing;
+  char **charmap;
+  int y, x;
+} sprite;
+
+static sprite *specsSprites[SPECTATORS];
+static sprite *immigsSprites[IMMIGRANTS];
+static sprite *swearOrAward[IMMIGRANTS];
+static sprite *judge;
 
 /* contabiliza onde cada thread está */
-int specs[SPECTATORS];
-int immigs[IMMIGRANTS];
 
-drawing *specsSprites[SPECTATORS];
-drawing *immigsSprites[IMMIGRANTS];
-drawing *swearOrAward[IMMIGRANTS];
-drawing *judge;
+static int specs[SPECTATORS];
+static int immigs[IMMIGRANTS];
 
 #define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
 
 char juiz_entrou[] = "The judge is in.";
 /* Função que imprime um sprite na janela win, com início nas coordenadas x,y */
-drawing* draw_sprite( WINDOW * win, char** sprite, int y, int x)
+sprite* draw_sprite( WINDOW * win, char** charmap, int y, int x)
 {
   int p;
-  drawing *temp = (drawing *) malloc(sizeof(drawing));
+  sprite *temp = (sprite *) malloc(sizeof(sprite));
   temp->window = win;
-  temp->sprite = sprite;
+  temp->charmap = charmap;
   temp->y = y;
   temp->x= x;
 
   /* escreve as strings */
-  for(p=0; sprite[p] != NULL; p++)
-    mvwaddstr(win, y + p, x, sprite[p]);
+  for(p=0; charmap[p] != NULL; p++)
+    mvwaddstr(win, y + p, x, charmap[p]);
   return temp;
 }
 /* Função que apaga um sprite na janela win, nas coordenadas x,y */
-void erase_sprite(drawing *temp)
+void erase_sprite(sprite *temp)
 {
   int p;
   /* escreve linhas em branco do tamanho das strings */
-  for (p = 0; temp->sprite[p] != NULL; p++)
-    mvwhline(temp->window, temp->y + p, temp->x, ' ', strlen(temp->sprite[p]));
+  for (p = 0; temp->charmap[p] != NULL; p++)
+    mvwhline(temp->window, temp->y + p, temp->x, ' ', strlen(temp->charmap[p]));
   free(temp);
 }
 /* Função que desenha o salão, como dois retângulos */
@@ -177,7 +180,7 @@ void immi_enter(int id)
   getmaxyx(outside, y, x);
   /* apaga de fora e desenha enfileirados horizontamente embaixo dos spectators */
   erase_sprite(immigsSprites[id]);
-  immigsSprites[id] = draw_sprite(hall, immie, IMMIE_HEIGHT+1, (IMMIE_WIDTH+1)*id);
+  immigsSprites[id] = draw_sprite(hall, immie, IMMIE_HEIGHT+1, (SWEAR_WIDTH+1)*id);
   wrefresh(outside);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
@@ -189,7 +192,7 @@ void immi_checkin(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
   erase_sprite(immigsSprites[id]);
-  immigsSprites[id] = draw_sprite(hall, immic, IMMIC_HEIGHT+1, (IMMIC_WIDTH+1)*id);
+  immigsSprites[id] = draw_sprite(hall, immic, IMMIC_HEIGHT+1, (SWEAR_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -221,7 +224,7 @@ void immi_getcert(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
   erase_sprite(swearOrAward[id]);
-  swearOrAward[id] = draw_sprite(hall, award, SPEC_HEIGHT+IMMIC_HEIGHT+5, (AWARD_WIDTH+1)*id);
+  swearOrAward[id] = draw_sprite(hall, award, SPEC_HEIGHT+IMMIC_HEIGHT+5, (SWEAR_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -257,17 +260,18 @@ void judge_enter(void)
 void judge_confirm(void)
 {
   int i, y, x;
+  sprite * hl3;
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   for (i=0;i<3;i++) {
     erase_sprite(judge);
-    mvwaddstr(hall, y/2, x/2, "CONFIRMED!"); /* ajeitar o lugar */
+    hl3 = draw_sprite(hall, confirmed, y-HAMMER_HEIGHT-1, (x-CONFIRMED_WIDTH)/2);
     wrefresh(hall);
-    sleep(0.2);
+    usleep(200000);
     judge = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
-    mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
+    erase_sprite(hl3);
     wrefresh(hall);
-    sleep(0.2);
+    usleep(200000);
   }
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);

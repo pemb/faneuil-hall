@@ -7,19 +7,20 @@
 #define SPECTATOR_MAX_WAIT 2*(SPECTATORS+IMMIGRANTS)
 #define JUDGE_SLEEP 3
 
-sem_t no_judge;			/* 1 */
-sem_t exit_sem;			/* 0 */
-sem_t all_gone;			/* 1 */
+/* tudo static pra evitar conflitos */
 
-pthread_mutex_t mutex;
-pthread_mutex_t rand_lock;
-pthread_cond_t confirmed;
-pthread_cond_t all_signed_in;
+static sem_t no_judge;			/* 1 */
+static sem_t exit_sem;			/* 0 */
+static sem_t all_gone;			/* 1 */
 
-volatile int entered = 0;
-volatile int spectators = 0;
-volatile int checked = 0;
-volatile int judge_inside = 0;
+static pthread_mutex_t mutex;
+static pthread_mutex_t rand_lock;
+static pthread_cond_t confirmed;
+static pthread_cond_t all_signed_in;
+
+static int entered = 0;
+static int checked = 0;
+static int judge_inside = 0;
 
 
 void *spectator(void *v)
