@@ -6,12 +6,21 @@
 /* sprites (desenhos) são vetor de apontadores pra strings das linhas
    o último ponteiro é NULL, assim que draw_sprite sabe onde parar */
 
-#define SPEC_HEIGHT 6
-#define SPEC_WIDTH 5
+#define CONFIRMED_WIDTH 10
+#define CONFIRMED_LENGTH 1
 
-
-char *spec [] = 
+char *confirmed[]=
   {
+    "CONFIRMED!",
+    NULL
+  };
+
+#define SPEC_HEIGHT 7
+#define SPEC_WIDTH 6
+
+char *spec [] =
+  {
+    "ENTREI",
     " (}   ",
     "/|\\_/",
     "\\|   ",
@@ -21,11 +30,24 @@ char *spec [] =
     NULL
   };
 
+#define ESPECTADOR_HEIGHT 7
+#define ESPECTADOR_WIDTH 6
 
+char *espectador [] =
+  {
+    "OUTRO?",
+    " (}   ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+    NULL
+  };
 #define IMMI_HEIGHT 8
-#define IMMI_WIDTH 7
+#define IMMI_WIDTH 8
 
-char *immi[] = 
+char *immi[] =
   {
     "  /-\\  ",
     "  \\_/  ",
@@ -38,10 +60,64 @@ char *immi[] =
     NULL
   };
 
+
+#define IMMIE_HEIGHT 9
+#define IMMIE_WIDTH 8
+
+char *immie[] =
+  {
+    "ENTERED!",
+    "  /-\\  ",
+    "  \\_/  ",
+    " /\\Y/\\",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+    NULL
+  };
+
+#define IMMIC_HEIGHT 9
+#define IMMIC_WIDTH 8
+
+char *immic[] =
+  {
+    "CHECKED!",
+    "  /-\\  ",
+    "  \\_/  ",
+    " /\\Y/\\",
+    "|| : ||",
+    "(|---|)",
+    " | | | ",
+    " | | | ",
+    " (/ \\) ",
+    NULL
+  };
+
+#define SWEAR_HEIGHT 10
+#define SWEAR_WIDTH 16
+
+char *swear[] =
+  {
+    "       _.-/`)  ",
+    "      // / / ) ",
+    "   .=// / / / )",
+    "  //`/ / / / / ",
+    " // /     ` /  ",
+    "||         /   ",
+    " \\\\       /    ",
+    "  ))    .'     ",
+    " //    /       ",
+    "      /        ",
+    NULL
+  };
+
+
 #define HAMMER_HEIGHT 4
 #define HAMMER_WIDTH 16
 
-char *hammer[] = 
+char *hammer[] =
   {
     " __             ",
     "|  | ___________",
@@ -50,7 +126,8 @@ char *hammer[] =
     NULL
   };
 
-/* TODO: defines dos tamanhos do resto */
+#define CADEIRA_HEIGHT 6
+#define CADEIRA_WIDTH 9
 
 char * cadeira[] =
   {
@@ -63,17 +140,38 @@ char * cadeira[] =
       NULL
   };
 
-char * bigMan [] = 
+#define BIGMAN_HEIGHT 9
+#define BIGMAN_WIDTH 8
+
+char * bigMan [] =
   {
-    "  _    ",
-    " (_)   ",
-    " _;_   ",
+    "  _     ",
+    " (_)    ",
+    " _;_    ",
     "/ | \\  ",
-    "\\ |  \\ ",
+    "\\ |  \\",
     " `|\\  `",
     "  | \\  ",
-    " /  /_ ",
-    " `     ",
+    " /  /_  ",
+    " `      ",
+      NULL
+  };
+
+#define AWARD_HEIGHT 10
+#define AWARD_WIDTH 10
+
+char * award [] =
+  {
+    "   ___   ",
+    " .'__ '. ",
+    "/ /_ |ST\\",
+    "|  | |  |",
+    "\\ <___> /",
+    " ;.___.; ",
+    " |::|;;| ",
+    " |::/;;| ",
+    " |:/`\\;| ",
+    " |/   \\| ",
       NULL
   };
 
