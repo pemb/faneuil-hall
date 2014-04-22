@@ -50,7 +50,7 @@ char *speco [] =
     NULL
   };
 #define IMMI_HEIGHT 8
-#define IMMI_WIDTH 8
+#define IMMI_WIDTH 16
 
 char *immi[] =
   {
@@ -67,7 +67,7 @@ char *immi[] =
 
 
 #define IMMIE_HEIGHT 9
-#define IMMIE_WIDTH 8
+#define IMMIE_WIDTH 16
 
 char *immie[] =
   {
@@ -83,12 +83,30 @@ char *immie[] =
     NULL
   };
 
+#define IMMIS_HEIGHT 9
+#define IMMIS_WIDTH 16
+
+char *immis[] =
+  {
+    "IM SO TIRED!",
+    "    /-\\  ",
+    "    \\_/  ",
+    "   /\\Y/\\",
+    "  || : ||",
+    "  (|---|)",
+    "   | | | ",
+    "   | | | ",
+    "   (/ \\) ",
+    NULL
+  };
+
+
 #define IMMIC_HEIGHT 9
-#define IMMIC_WIDTH 8
+#define IMMIC_WIDTH 16
 
 char *immic[] =
   {
-    "CHECKED!",
+    "CHECK-IN!",
     "  /-\\  ",
     "  \\_/  ",
     " /\\Y/\\",
@@ -118,18 +136,21 @@ char *swear[] =
     NULL
   };
 
+char conf[] = {"CONFIRMED!"};
 
-#define HAMMER_HEIGHT 4
-#define HAMMER_WIDTH 17
+#define HAMMER_HEIGHT 5
+#define HAMMER_WIDTH 28
 
 char *hammer[] =
   {
+    "SILENCE! THE JUDGE IS HERE!",
     " __             ",
     "|  | ___________",
     "|  >:===========",
     "|__|            ",
     NULL
   };
+
 
 #define CADEIRA_HEIGHT 6
 #define CADEIRA_WIDTH 9
@@ -163,7 +184,7 @@ char * bigMan [] =
   };
 
 #define AWARD_HEIGHT 10
-#define AWARD_WIDTH 10
+#define AWARD_WIDTH 16
 
 char * award [] =
   {

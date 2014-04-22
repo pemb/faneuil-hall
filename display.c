@@ -200,7 +200,9 @@ void immi_checkin(int id)
 void immi_sit(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  erase_sprite(immigsSprites[id]);
+  immigsSprites[id] = draw_sprite(hall, immis, IMMIS_HEIGHT+1, (IMMIS_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 
@@ -260,15 +262,18 @@ void judge_confirm(void)
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   for (i=0;i<3;i++) {
-    erase_sprite(judgeP);
-    mvwaddstr(hall, y/2, x/2, "CONFIRMED!"); /* ajeitar o lugar */
+    /*erase_sprite(judgeP);*/
+    mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + AWARD_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf); /* ajeitar o lugar */
     wrefresh(hall);
-    sleep(0.2);
+    /*sleep(0.2);
     judgeP = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
     mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
-    wrefresh(hall);
-    sleep(0.2);
+    /*wrefresh(hall);*/
+    sleep(0.4);
   }
+  
+  for (i = 0; i < 3; i++)
+    mvwhline(hall, SPECO_HEIGHT + IMMIC_HEIGHT + AWARD_HEIGHT + 5, (IMMIC_WIDTH+1)*i, ' ', strlen(conf));
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
