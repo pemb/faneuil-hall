@@ -174,10 +174,8 @@ int immi_arrive(void)
 /* Função que leva o imigrante para o lado direito */
 void immi_enter(int id)
 {
-  int y, x;
   pthread_mutex_lock(&ncurses_lock);
   immigs[id] = INSIDE;
-  getmaxyx(outside, y, x);
   /* apaga de fora e desenha enfileirados horizontamente embaixo dos spectators */
   erase_sprite(immigsSprites[id]);
   immigsSprites[id] = draw_sprite(hall, immie, IMMIE_HEIGHT+1, (SWEAR_WIDTH+1)*id);
@@ -261,18 +259,11 @@ void judge_enter(void)
 /* Função que troca o estado do juíz para confirmando */
 void judge_confirm(void)
 {
-  int i, y, x;
-  sprite * hl3;
+  int i;
   pthread_mutex_lock(&ncurses_lock);
-  getmaxyx(hall, y, x);
   for (i=0;i<3;i++) {
-    /*erase_sprite(judgeP);*/
     mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf); /* ajeitar o lugar */
     wrefresh(hall);
-    /*sleep(0.2);
-    judgeP = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
-    mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
-    /*wrefresh(hall);*/
     sleep(1);
   }
   
@@ -285,9 +276,7 @@ void judge_confirm(void)
 /* Função que faz o juíz ir embora apagando-o da tela */
 void judge_leave(void)
 {
-  int y, x;
   pthread_mutex_lock(&ncurses_lock);
-  getmaxyx(hall, y, x);
   /* apaga */
   erase_sprite(judge);
   wrefresh(hall);
