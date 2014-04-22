@@ -6,10 +6,24 @@
 /* sprites (desenhos) são vetor de apontadores pra strings das linhas
    o último ponteiro é NULL, assim que draw_sprite sabe onde parar */
 
-#define SPEC_HEIGHT 7
+#define SPEC_HEIGHT 6
 #define SPEC_WIDTH 6
 
 char *spec [] =
+  {
+    " (}   ",
+    "/|\\_/",
+    "\\|   ",
+    " |\\  ",
+    "/ |  ",
+    "` `  ",
+    NULL
+  };
+
+#define SPECE_HEIGHT 7
+#define SPECE_WIDTH 6
+
+char *spece [] =
   {
     "ENTREI",
     " (}   ",
@@ -21,10 +35,10 @@ char *spec [] =
     NULL
   };
 
-#define ESPECTADOR_HEIGHT 7
-#define ESPECTADOR_WIDTH 6
+#define SPECO_HEIGHT 7
+#define SPECO_WIDTH 6
 
-char *espectador [] =
+char *speco [] =
   {
     "OUTRO?",
     " (}   ",
@@ -106,7 +120,7 @@ char *swear[] =
 
 
 #define HAMMER_HEIGHT 4
-#define HAMMER_WIDTH 16
+#define HAMMER_WIDTH 17
 
 char *hammer[] =
   {

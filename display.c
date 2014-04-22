@@ -11,8 +11,8 @@ pthread_mutex_t ncurses_lock = PTHREAD_MUTEX_INITIALIZER;
 WINDOW * hall, * outside;
 
 typedef struct _drawing {
-  int y, x;
-  char **sprite;
+  int y1, x1;
+  char **sprite1;
   WINDOW * window;
 } drawing;
 
@@ -23,7 +23,7 @@ int immigs[IMMIGRANTS];
 drawing *specsSprites[SPECTATORS];
 drawing *immigsSprites[IMMIGRANTS];
 drawing *swearOrAward[IMMIGRANTS];
-drawing *judge;
+drawing *judgeP;
 
 #define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
 
@@ -34,9 +34,9 @@ drawing* draw_sprite( WINDOW * win, char** sprite, int y, int x)
   int p;
   drawing *temp = (drawing *) malloc(sizeof(drawing));
   temp->window = win;
-  temp->sprite = sprite;
-  temp->y = y;
-  temp->x= x;
+  temp->sprite1 = sprite;
+  temp->y1 = y;
+  temp->x1 = x;
 
   /* escreve as strings */
   for(p=0; sprite[p] != NULL; p++)
@@ -48,8 +48,8 @@ void erase_sprite(drawing *temp)
 {
   int p;
   /* escreve linhas em branco do tamanho das strings */
-  for (p = 0; temp->sprite[p] != NULL; p++)
-    mvwhline(temp->window, temp->y + p, temp->x, ' ', strlen(temp->sprite[p]));
+  for (p = 0; temp->sprite1[p] != NULL; p++)
+    mvwhline(temp->window, (temp->y1) + p, temp->x1, ' ', strlen(temp->sprite1[p]));
   free(temp);
 }
 /* Função que desenha o salão, como dois retângulos */
@@ -121,7 +121,7 @@ void spec_enter(int id)
   specs[id] = INSIDE;
   /* apaga de fora e desenha enfileirados horizontamente no topo */
   erase_sprite(specsSprites[id]);
-  specsSprites[id] = draw_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
+  specsSprites[id] = draw_sprite(hall, spece, 0, (SPECE_WIDTH+1)*id);
   wrefresh(outside);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
@@ -133,7 +133,7 @@ void spec_spec(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
   erase_sprite(specsSprites[id]);
-  specsSprites[id] = draw_sprite(hall, espectador, 0, (ESPECTADOR_WIDTH+1)*id);
+  specsSprites[id] = draw_sprite(hall, speco, 0, (SPECO_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -247,7 +247,7 @@ void judge_enter(void)
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   /* desenha centralizado em baixo */
-  judge = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+  judgeP = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -260,11 +260,11 @@ void judge_confirm(void)
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   for (i=0;i<3;i++) {
-    erase_sprite(judge);
+    erase_sprite(judgeP);
     mvwaddstr(hall, y/2, x/2, "CONFIRMED!"); /* ajeitar o lugar */
     wrefresh(hall);
     sleep(0.2);
-    judge = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+    judgeP = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
     mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
     wrefresh(hall);
     sleep(0.2);
@@ -280,7 +280,7 @@ void judge_leave(void)
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   /* apaga */
-  erase_sprite(judge);
+  erase_sprite(judgeP);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
