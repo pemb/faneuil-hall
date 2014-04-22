@@ -139,8 +139,8 @@ void *judge(void *v)
 int main()
 {
   pthread_t thr_judge;
-  pthread_t thr_immig[IMMIGRANTS];
-  pthread_t thr_specs[SPECTATORS];
+  pthread_t *thr_immig;
+  pthread_t *thr_specs;
   int i, num_immigs, num_specs;
 
   /* inicializando as putaria tudo */
@@ -164,7 +164,8 @@ int main()
 
   if (!(i = init(num_specs, num_immigs)))
     {
-
+      thr_immig = (pthread_t *)malloc(sizeof(pthread_t) * num_immigs);
+      thr_specs = (pthread_t *)malloc(sizeof(pthread_t) * num_specs);
       for (i = 0; i < num_immigs; i++)
 	pthread_create(thr_immig + i, NULL, immigrant, NULL);
 
@@ -187,6 +188,9 @@ int main()
   /* clean-up que nunca roda já que o programa é loop inifinito hu3 */
 
   finish();
+   
+  free(thr_immig);  
+  free(thr_specs);
 
   sem_destroy(&no_judge);
   sem_destroy(&exit_sem);

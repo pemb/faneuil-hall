@@ -18,15 +18,15 @@ typedef struct _sprite {
   int y, x;
 } sprite;
 
-static sprite *specsSprites[SPECTATORS];
-static sprite *immigsSprites[IMMIGRANTS];
-static sprite *swearOrAward[IMMIGRANTS];
+static sprite **specsSprites;
+static sprite **immigsSprites;
+static sprite **swearOrAward;
 static sprite *judge;
 
 /* contabiliza onde cada thread está */
 
-static int specs[SPECTATORS];
-static int immigs[IMMIGRANTS];
+static int *specs;
+static int *immigs;
 
 int num_immig, num_spec;
 
@@ -75,6 +75,15 @@ int init(int numero_specs, int numero_immigs)
   num_immig = numero_immigs;
   num_spec = numero_specs;
 
+  specsSprites = (sprite **) malloc(sizeof(sprite *) * num_spec);
+  immigsSprites = (sprite **) malloc(sizeof(sprite *) * num_immig);
+  swearOrAward = (sprite **) malloc(sizeof(sprite *) * num_immig);
+
+  specs = (int *) calloc(num_spec, sizeof(int));
+  immigs = (int *) calloc(num_immig, sizeof(int));
+
+  
+
   /* inicializa uma porrada de coisa */
   initscr();
   if (has_colors() == FALSE)
@@ -104,6 +113,11 @@ int init(int numero_specs, int numero_immigs)
 
 void finish(void)
 {
+  free(specsSprites);
+  free(immigsSprites);
+  free(swearOrAward);
+  free(specs);
+  free(immigs);
   endwin();
 }
 
