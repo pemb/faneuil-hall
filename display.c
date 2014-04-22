@@ -124,7 +124,7 @@ void spec_enter(int id)
   specs[id] = INSIDE;
   /* apaga de fora e desenha enfileirados horizontamente no topo */
   erase_sprite(specsSprites[id]);
-  specsSprites[id] = draw_sprite(hall, spec, 0, (SPEC_WIDTH+1)*id);
+  specsSprites[id] = draw_sprite(hall, spece, 0, (SPECE_WIDTH+1)*id);
   wrefresh(outside);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
@@ -136,7 +136,7 @@ void spec_spec(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
   erase_sprite(specsSprites[id]);
-  specsSprites[id] = draw_sprite(hall, espectador, 0, (ESPECTADOR_WIDTH+1)*id);
+  specsSprites[id] = draw_sprite(hall, speco, 0, (SPECO_WIDTH+1)*id);
   wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
@@ -203,7 +203,9 @@ void immi_checkin(int id)
 void immi_sit(int id)
 {
   pthread_mutex_lock(&ncurses_lock);
-  /* TODO */
+  erase_sprite(immigsSprites[id]);
+  immigsSprites[id] = draw_sprite(hall, immis, IMMIS_HEIGHT+1, (SWEAR_WIDTH+1)*id);
+  wrefresh(hall);
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 
@@ -264,15 +266,18 @@ void judge_confirm(void)
   pthread_mutex_lock(&ncurses_lock);
   getmaxyx(hall, y, x);
   for (i=0;i<3;i++) {
-    erase_sprite(judge);
-    hl3 = draw_sprite(hall, confirmed, y-HAMMER_HEIGHT-1, (x-CONFIRMED_WIDTH)/2);
+    /*erase_sprite(judgeP);*/
+    mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf); /* ajeitar o lugar */
     wrefresh(hall);
-    usleep(200000);
-    judge = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
-    erase_sprite(hl3);
-    wrefresh(hall);
-    usleep(200000);
+    /*sleep(0.2);
+    judgeP = draw_sprite(hall, hammer, y - HAMMER_HEIGHT, (x - HAMMER_WIDTH)/2);
+    mvwhline(hall, y/2, x/2, ' ', 10);  /*ajeitar o lugar */
+    /*wrefresh(hall);*/
+    sleep(1);
   }
+  
+  for (i = 0; i < 3; i++)
+    mvwhline(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, ' ', strlen(conf));
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);
 }
