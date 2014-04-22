@@ -28,6 +28,8 @@ static sprite *judge;
 static int specs[SPECTATORS];
 static int immigs[IMMIGRANTS];
 
+int num_immig, num_spec;
+
 #define OUTSIDE_SIZE IMMI_WIDTH + SPEC_WIDTH + 2
 
 /* Função que imprime um sprite na janela win, com início nas coordenadas x,y */
@@ -67,8 +69,11 @@ void draw_borders(void)
 }
 
 /* Função que inicializa a interface, e cria as janelas */
-int init(void)
+int init(int numero_specs, int numero_immigs)
 {
+  
+  num_immig = numero_immigs;
+  num_spec = numero_specs;
 
   /* inicializa uma porrada de coisa */
   initscr();
@@ -260,13 +265,13 @@ void judge_confirm(void)
 {
   int i;
   pthread_mutex_lock(&ncurses_lock);
-  for (i=0;i<IMMIGRANTS;i++) {
+  for (i=0;i<num_immig;i++) {
     mvwaddstr(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, conf);
     wrefresh(hall);
     sleep(1);
   }
   
-  for (i = 0; i < IMMIGRANTS; i++)
+  for (i = 0; i <num_immig; i++)
     mvwhline(hall, SPECO_HEIGHT + IMMIC_HEIGHT + 5, (IMMIC_WIDTH+1)*i, ' ', strlen(conf));
   pthread_mutex_unlock(&ncurses_lock);
   sleep(1);

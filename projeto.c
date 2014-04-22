@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include "display.h"
+#include <stdio.h>
 
 #define SPECTATOR_MAX_WAIT 2*(SPECTATORS+IMMIGRANTS)
 #define JUDGE_SLEEP 3
@@ -140,7 +141,7 @@ int main()
   pthread_t thr_judge;
   pthread_t thr_immig[IMMIGRANTS];
   pthread_t thr_specs[SPECTATORS];
-  int i;
+  int i, num_immigs, num_specs;
 
   /* inicializando as putaria tudo */
   srand(time(0));
@@ -155,25 +156,29 @@ int main()
   pthread_cond_init(&confirmed, NULL);
   pthread_cond_init(&all_signed_in, NULL);
 
+  printf("Digite o numero de espectadores desejado (max = 5): \n");
+  scanf(" %d", &num_specs);
+  printf("Digite o numero de imigrantes desejado (max = 4): \n");
+  scanf(" %d", &num_immigs);
   /* se init retornar algo é porque zicou a inicialização */
 
-  if (!(i = init()))
+  if (!(i = init(num_specs, num_immigs)))
     {
 
-      for (i = 0; i < IMMIGRANTS; i++)
+      for (i = 0; i < num_immigs; i++)
 	pthread_create(thr_immig + i, NULL, immigrant, NULL);
 
-      for (i = 0; i < SPECTATORS; i++)
+      for (i = 0; i < num_specs; i++)
 	pthread_create(thr_specs + i, NULL, spectator, NULL);
 
       pthread_create(&thr_judge, NULL, judge, NULL);
 
       pthread_join(thr_judge, NULL);
 
-      for (i = 0; i < SPECTATORS; i++)
+      for (i = 0; i < num_specs; i++)
 	pthread_join(thr_specs[i], NULL);
 
-      for (i = 0; i < IMMIGRANTS; i++)
+      for (i = 0; i < num_immigs; i++)
 	pthread_join(thr_immig[i], NULL);
 
       i = 0;

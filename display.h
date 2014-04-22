@@ -8,7 +8,7 @@
 #define OUTSIDE 1
 #define INSIDE 2
 
-int init(void);
+int init(int, int);
 
 void finish(void);
 
